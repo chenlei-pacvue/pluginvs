@@ -147,17 +147,17 @@ class FileClass {
       this.filetype = filetype;
     }
     let keyArrs = keyArr ? keyArr.split(",") : this.keycell.split(",");
-    console.log(keyArrs)
+
     keyArrs.forEach(itemkey => {
       this.keycell = itemkey;
       sheetArr.forEach(item => {
         this.worksheet = this.workbook.Sheets[item];
         this.ExcelProp = this.getExcelProp(this.worksheet["!ref"]);
-        console.log(this.ExcelProp,this.worksheet["!ref"])
+       
         this.fillObj = this.fillColumKey(this.ExcelProp);
         this.fillObj.layoutX.forEach(items => {
           this.xName = this.readExcelColumKey(items + 1, item);
-          console.log( this.xName)
+         
           // if (this.xName.indexOf(this.regValue) === -1 && isusereg) return;
           // if (isusereg) this.xName = this.xName.split(this.regValue)[0];
           this.readExcelColum(items, item);
