@@ -3,8 +3,8 @@
 import * as vscode from 'vscode';
 import { readConfigFile, getConfigByKey, getLangJson } from './config';
 import { getWebviewContent, getWebviewExport } from './webview/webview';
-import { addi18n } from './i18n/I18nCommon'；
-import {FileClass} from './util/FileClass'
+import { addi18n } from './i18n/I18nCommon';
+import {FileClass} from './util/FileClass';
 import {
 	WebviewView,
 	WebviewViewResolveContext,

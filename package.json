@@ -4,7 +4,7 @@
 	"description": "pacvue tool",
 	"version": "0.0.1",
 	"engines": {
-		"vscode": "^1.58.2"
+		"vscode": "^1.62.0"
 	},
 	"categories": [
 		"Other"
@@ -82,6 +82,7 @@
 	"dependencies": {
 		"fs-extra": "^10.1.0",
 		"lodash": "^4.17.21",
+		"xlsx": "^0.18.5",
 		"xlsx-style": "^0.8.13"
 	}
 }

@@ -81,7 +81,7 @@ class FileClass {
 
       fillColum.push(regEn.exec(i)[0]);
     }
-    fillColum.shift(0);
+    fillColum.shift();
     return {
       layoutX: fillColum,
       layoutY: [ExcelProp[1], ExcelProp[3]]
@@ -141,7 +141,7 @@ class FileClass {
     }
     // console.log("done");
   }
-  checkSheet(sheetArr, isusereg, keyArr, keyvalue, filetype) {
+  checkSheet(sheetArr, isusereg, keyArr?, keyvalue?, filetype?) {
     this.repeatkey = [];
     if (filetype) {
       this.filetype = filetype;
