@@ -34,7 +34,6 @@ export function activate(context: vscode.ExtensionContext) {
 		MapforValue[langmap[key]] = key;
 	}
 	console.log('Congratulations, your extension "pacvueextension" is now active!!');
-	addi18n()
 	vscode.languages.registerHoverProvider(['javascript', 'vue'], {
 		provideHover(doc: vscode.TextDocument, position: Position) {
 			// console.log(window.activeTextEditor?.selections[0]);
@@ -52,10 +51,6 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 		}
 	});
-	let disposable = vscode.commands.registerCommand('pacvueextension.helloWorld', () => {
-		vscode.window.showInformationMessage('Hello World from pacvueExtension!!');
-	});
-
 	let i18nreplace = vscode.commands.registerCommand('pacvueextension.replace', (x) => {
 		const edit = new vscode.WorkspaceEdit();
 		edit.replace(
@@ -120,7 +115,6 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 	context.subscriptions.push(i18nView);
 	context.subscriptions.push(i18nreplace);
-	context.subscriptions.push(disposable);
 	context.subscriptions.push(exportExcel);
 	// context.subscriptions.push(disposables);
 	var thisProvider = {
@@ -157,6 +151,7 @@ export function activate(context: vscode.ExtensionContext) {
 			addi18n()
 		}, null)
 	);
+	addi18n()
 }
 
 

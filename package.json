@@ -3,6 +3,11 @@
 	"displayName": "pacvueExtension",
 	"description": "pacvue tool",
 	"version": "0.0.1",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/chenglie33/pluginvs.git"
+	},
+	"publisher": "chenlei",
 	"engines": {
 		"vscode": "^1.62.0"
 	},
@@ -10,7 +15,6 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:pacvueextension.helloWorld",
 		"onView:pacvueextension.pacvue.show",
 		"onLanguage:javascript",
 		"onLanguage:vue"
@@ -18,10 +22,6 @@
 	"main": "./dist/extension.js",
 	"contributes": {
 		"commands": [
-			{
-				"command": "pacvueextension.helloWorld",
-				"title": "Hello World"
-			},
 			{
 				"command": "pacvueextension.replace",
 				"title": "replace text"
@@ -36,7 +36,7 @@
 				{
 					"id": "pacvueContrl",
 					"title": "pacvueTools",
-					"icon": "src/assets/Shipments.svg"
+					"icon": "images/Shipments.svg"
 				}
 			]
 		},
@@ -71,6 +71,7 @@
 		"@typescript-eslint/eslint-plugin": "^5.1.0",
 		"@typescript-eslint/parser": "^5.1.0",
 		"@vscode/test-electron": "^1.6.2",
+		"copy-webpack-plugin": "^10.2.4",
 		"eslint": "^8.1.0",
 		"glob": "^7.1.7",
 		"mocha": "^9.1.3",
