@@ -12,3 +12,4 @@
   "useLang": "zh",
   "langDist": "src/assets/langs"
 }
+vsce package

@@ -32,6 +32,7 @@ export const getConfigByKey = function(): any {
     // module.exports = /export\s*default\s*({[\s\S]+);?$/
     // let obj = fileContent.replace('module.exports = ', '');
    let  obj = fileContent.replace('module.exports', '');
+   obj = fileContent.replace('export default ', '');
    obj = obj.replace('=', '}');
     obj = obj.replace('};', '}');
     let jsObj = {};

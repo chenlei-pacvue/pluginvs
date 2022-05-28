@@ -84,8 +84,6 @@ export function activate(context: vscode.ExtensionContext) {
 			message => {
 				switch (message.command) {
 					case 'export':
-						
-						console.log(message)
 						// vscode.window.showErrorMessage(message.text);
 						try {
 							let ff = new FileClass(message.text.file, message.text.outFile, 'B')
@@ -98,7 +96,7 @@ export function activate(context: vscode.ExtensionContext) {
 					case 'selectfile':
 						window.showOpenDialog({canSelectFolders: true, canSelectFiles: false}).then(iten=> {
 						
-							panel.webview.postMessage({ command: 'refactor', text: iten[0].path});
+							panel.webview.postMessage({ command: 'refactor', text: iten[0].fsPath});
 						})
 						break;
 				}
