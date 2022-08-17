@@ -2,7 +2,7 @@
 	"name": "pacvueextension",
 	"displayName": "pacvueExtension",
 	"description": "pacvue tool",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/chenglie33/pluginvs.git"
@@ -16,6 +16,7 @@
 	],
 	"activationEvents": [
 		"onView:pacvueextension.pacvue.show",
+		"onView:pacvueextension.pacvue.info",
 		"onLanguage:javascript",
 		"onLanguage:vue"
 	],
@@ -29,8 +30,57 @@
 			{
 				"command": "pacvueextension.show18Tool",
 				"title": "show18Tool"
+			},
+			{
+				"command": "pacvueextension.showCreate",
+				"title": "showCreate"
+			},
+			{
+				"command": "pacvueextension.refresh",
+				"title": "refresh",
+        "icon": {
+          "light": "images/refresh.svg",
+          "dark": "images/refresh.svg"
+        }
+  
+			},
+      {
+				"command": "pacvueextension.preview",
+				"title": "preview",
+        "icon": {
+          "light": "images/Preview.svg",
+          "dark": "images/Preview.svg"
+        }
+  
+			},
+      {
+				"command": "pacvueextension.replaceAll",
+				"title": "replace text",
+        "icon": {
+          "light": "images/replaceAll.svg",
+          "dark": "images/replaceAll.svg"
+        }
 			}
 		],
+		"menus": {
+      "view/item/context": [
+				{
+					"command": "pacvueextension.refresh",
+					"when": "view == pacvueextension.pacvue.info && viewItem == dependency",
+					"group": "inline"
+				},
+        {
+					"command": "pacvueextension.replaceAll",
+					"when": "view == pacvueextension.pacvue.info && viewItem == dependency",
+					"group": "inline"
+				},
+        {
+					"command": "pacvueextension.preview",
+					"when": "view == pacvueextension.pacvue.info && viewItem == dependencyItem",
+					"group": "inline"
+				}
+			]
+		},
 		"viewsContainers": {
 			"activitybar": [
 				{
@@ -46,7 +96,11 @@
 					"id": "pacvueextension.pacvue.show",
 					"type": "webview",
 					"contextualTitle": "Pavue",
-					"name": "pacvueTools"
+					"name": "工具箱"
+				},
+				{
+					"id": "pacvueextension.pacvue.info",
+					"name": "国际化信息"
 				}
 			]
 		}
@@ -81,8 +135,13 @@
 		"webpack-cli": "^4.8.0"
 	},
 	"dependencies": {
+		"@vscode/codicons": "^0.0.32",
+		"@vue/compiler-sfc": "^3.2.37",
+		"download-git-repo": "^3.0.2",
 		"fs-extra": "^10.1.0",
+		"globby": "^13.1.2",
 		"lodash": "^4.17.21",
+		"single-line-log": "^1.1.2",
 		"xlsx": "^0.18.5",
 		"xlsx-style": "^0.8.13"
 	}

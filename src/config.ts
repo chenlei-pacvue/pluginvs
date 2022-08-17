@@ -10,7 +10,7 @@ export const readConfigFile = function () {
         return null;
     }
     return pacvueConfigJson;
-}
+};
 
 export const getConfigByKey = function(): any {
     const configFile = vscode.workspace.workspaceFolders ? `${vscode.workspace.workspaceFolders[0].uri.fsPath}/pacvue.config.json` : '';
@@ -23,6 +23,7 @@ export const getConfigByKey = function(): any {
     } catch (error) {
       console.log(error);
     }
+    
     return content;
   };
 
@@ -31,16 +32,16 @@ export const getConfigByKey = function(): any {
     const fileContent = fs.readFileSync(fileName, { encoding: 'utf8' });
     // module.exports = /export\s*default\s*({[\s\S]+);?$/
     // let obj = fileContent.replace('module.exports = ', '');
-   let  obj = fileContent.replace('module.exports', '');
-   obj = fileContent.replace('export default ', '');
-   obj = obj.replace('=', '}');
-    obj = obj.replace('};', '}');
+   let  obj = fileContent.replace('module.exports =', 'module.exports = ');
+   obj = fileContent.replace('export default ', 'module.exports = ');
+  //  obj = obj.replace('=', '}');
+  //   obj = obj.replace('};', '}');
     let jsObj = {};
     try {
-      jsObj = eval(fileContent);
+      jsObj = eval(obj);
     } catch (err) {
       console.log(obj);
       console.error(err);
     }
     return jsObj;
-  }
+  };

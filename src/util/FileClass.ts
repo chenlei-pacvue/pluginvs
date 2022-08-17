@@ -3,6 +3,8 @@ const XLSX = require("xlsx-style");
 var fs = require("fs");
 // import { MessageCenter } from "utiltool-pubsub";
 // let message = new MessageCenter();
+// import { MessageCenter } from "utiltool-pubsub";
+// let message = new MessageCenter();
 class FileClass {
   repeatkey;
   regValue;
@@ -37,13 +39,15 @@ class FileClass {
   setkeycell(v) {
     this.keycell = v;
   }
-  checkAllSheet() {
+  checkAllSheet(layoutX) {
+    this.deleteFile();
     this.repeatkey = [];
     this.workbook.SheetNames.forEach(item => {
       this.worksheet = this.workbook.Sheets[item];
       this.ExcelProp = this.getExcelProp(this.worksheet["!ref"]);
       this.fillObj = this.fillColumKey(this.ExcelProp);
-      this.fillObj.layoutX.forEach(items => {
+      let layoutXAll = layoutX || this.fillObj.layoutX;
+      layoutXAll.forEach(items => {
         this.xName = this.readExcelColumKey(items + 1, item);
         // if (this.xName.indexOf(this.regValue) === -1) return;
         // this.xName = this.xName.split(this.regValue)[0];
@@ -51,6 +55,7 @@ class FileClass {
         this.readExcelColum(items, item);
       });
     });
+    this.writeJs();
   }
 
   // 正则表达式的方式获取excel的col 以及 row 的关键字
@@ -81,7 +86,7 @@ class FileClass {
 
       fillColum.push(regEn.exec(i)[0]);
     }
-    fillColum.shift();
+    fillColum.shift(0);
     return {
       layoutX: fillColum,
       layoutY: [ExcelProp[1], ExcelProp[3]]
@@ -96,11 +101,11 @@ class FileClass {
   // 循环某一列的所有数据并且读取
   readExcelColum(key, sheetName) {
     let mapKey = {};
-    if (key === this.keycell) return;
+    if (key === this.keycell) {return;}
     for (let i = 2; i < Number(this.fillObj.layoutY[1]) + 1; i++) {
       let value = this.readExcelColumKey(key + i, sheetName);
       let i18key = this.readExcelColumKey(this.keycell + i, sheetName);
-      if (value && i18key) mapKey[i18key] = value;
+      if (value && i18key) {mapKey[i18key] = value;}
     }
     this.appendJson(`${key}1`, mapKey);
   }
@@ -137,40 +142,77 @@ class FileClass {
         "utf8"
       );
     } catch (err) {
-      if (err) throw err;
+      if (err) {throw err;}
     }
     // console.log("done");
   }
-  checkSheet(sheetArr, isusereg, keyArr?, keyvalue?, filetype?) {
-    this.repeatkey = [];
+  writeJs() {
+    try {
+      let files = fs.readdirSync(this.outfilePath);
+      files.forEach(item => {
+        
+        if (item.indexOf('.')!==0){
+          let data = fs.readFileSync(
+            `${this.outfilePath}/${item}`,
+          );
+          fs.writeFileSync(
+            `${this.outfilePath}/${item}`,
+            'export default ' + data,
+            "utf8"
+          );
+        }
+      });
+    
+    } catch (err) {
+      console.error(err);
+      // if (err) {throw err;}
+    }
+  }
+  deleteFile() {
+    try {
+      let files = fs.readdirSync(this.outfilePath);
+      files.forEach(item => {
+        
+        if (item.indexOf('.')!==0){
+          fs.rmSync(
+            `${this.outfilePath}/${item}`,
+          );
+        }
+      });
+    
+    } catch (err) {
+      console.error(err);
+      // if (err) {throw err;}
+    }
+  }
+  checkSheet(sheetArr, layoutX, keyArr?, keyvalue?, filetype?) {
     if (filetype) {
       this.filetype = filetype;
     }
+    this.deleteFile();
     let keyArrs = keyArr ? keyArr.split(",") : this.keycell.split(",");
-
     keyArrs.forEach(itemkey => {
       this.keycell = itemkey;
       sheetArr.forEach(item => {
         this.worksheet = this.workbook.Sheets[item];
         this.ExcelProp = this.getExcelProp(this.worksheet["!ref"]);
-       
         this.fillObj = this.fillColumKey(this.ExcelProp);
-        this.fillObj.layoutX.forEach(items => {
+        let layoutXAll = layoutX || this.fillObj.layoutX;
+        layoutXAll.forEach(items => {
           this.xName = this.readExcelColumKey(items + 1, item);
-         
-          // if (this.xName.indexOf(this.regValue) === -1 && isusereg) return;
-          // if (isusereg) this.xName = this.xName.split(this.regValue)[0];
           this.readExcelColum(items, item);
+          
+          
         });
-        // columKeyArr.forEach(items => {
-        //   this.readExcelColum(items, item);
-        // });
+        
       });
+     
     });
+   this.writeJs();
   }
 }
 export { FileClass };
-// let ff = new FileClassJson(
+// let ff = new FileClass(
 //   "/Users/chenlei/Desktop/翻译.xlsx",
 //   "/Users/chenlei/Desktop/tt",
 //   "B"

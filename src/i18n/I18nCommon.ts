@@ -9,6 +9,8 @@ import {
   Range
 } from 'vscode';
 import * as _ from 'lodash';
+import {getPackageJson} from '../util/utils';
+var fs = require("fs");
 const annotationDecoration: TextEditorDecorationType = window.createTextEditorDecorationType({
   after: {
     margin: '0 0 0 3em',
@@ -47,10 +49,9 @@ export function transformPosition(pos: Position, editorText: string, toLastCol?:
 }
 export const addi18n = function () {
   const activeEditor = window.activeTextEditor;
-  if (!activeEditor) return;
+  if (!activeEditor) {return;}
   let code = activeEditor.document.getText();
   const positions = getRegexMatches({}, code);
-
   let decorations = [];
   decorations = (positions || []).map(pos => {
     const toLastCol = true;
@@ -70,7 +71,7 @@ export const addi18n = function () {
   });
 
   activeEditor.setDecorations(annotationDecoration, decorations);
-}
+};
 export class Position {
   start: number;
   cn: string;
@@ -88,7 +89,7 @@ function getRegexMatches(I18N, code: string) {
       let reg1 = /'(.+?)'/g;
       let reg2 = /"(.+?)"/g;
       let linearr = line.match(reg);
-      if (!linearr) return;
+      if (!linearr) {return;}
       linearr.forEach(item => {
         let position = new Position();
         let textcode = item.split(',')[0];
@@ -102,7 +103,44 @@ function getRegexMatches(I18N, code: string) {
         }
         (position as any).line = index;
         // console.log(index, position.code, global.langmap[position.code])
-        position.cn = global.langmap[position.code];
+        if (global.langtype === 'string') {
+          position.cn = global.langmap[position.code];
+        } else {
+          let mainArr = [];
+          try {
+            let folders = fs.readdirSync(vscode.workspace.workspaceFolders[0].uri.path+'/' + config.rootwork);
+            folders.forEach(item => {
+              let packages = JSON.parse(fs.readFileSync(vscode.workspace.workspaceFolders[0].uri.path+'/' + config.rootwork+"/"+item+'/package.json', 'utf-8'));
+              mainArr.push(packages.name);
+            });
+          } catch (error) {
+              console.log("读取根文件夹报错 可能出现了空的文件夹");
+          }
+          let map = {};
+        let isInclude = mainArr.some(item => {
+          let packageName = getPackageJson(window.activeTextEditor.document.fileName, config.rootwork, vscode.workspace.workspaceFolders[0].uri.path);
+          if(global.langmap[packageName]) {
+            map = global.langmap[item];
+            return true;
+          }
+        });
+        if (!isInclude) {
+          map = global.langmap.AllIn;
+        }
+          // let map = {};
+          // let isInclude = mainArr.some(item => {
+          //   if(window.activeTextEditor.document.fileName.indexOf(`/${item}/`)!== -1) {
+          //     map = global.langmap[item];
+          //     return true;
+          //   }
+          // });
+          // if (!isInclude) {
+          //   map = global.langmap.AllIn;
+          // }
+      
+          position.cn = map[position.code];
+        }
+       
         if (position.cn) {
 
           positions.push(position);
@@ -110,7 +148,7 @@ function getRegexMatches(I18N, code: string) {
       });
     });
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
 
   return positions;
