@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 var fs = require("fs");
+import { tsvFormatRows } from 'd3-dsv';
 const compilerSFC = require('@vue/compiler-sfc');
 function getPackageJson (fileName, rootwork, workuri) {
   let roots = `${workuri}/${rootwork}`;
@@ -14,8 +15,9 @@ function regKey(keyArr,code) {
   let match = code.match(reg1);
   return {test:reg.test(code), macths: match};
  }
- function codeReplace(list) {
+function codeReplace(list) {
   let map = new Map();
+  let editArr = [];
 
   list.forEach(item => {
     let arr = map.get(item.pathroot) || [];
@@ -59,10 +61,21 @@ function regKey(keyArr,code) {
     });
     // new vscode.Position(1);
     // console.log(item,key,s.toString());
-    vscode.workspace.applyEdit(edit);
+    editArr.push(edit);
+    // vscode.workspace.applyEdit(edit).then(()=>{
+    //   vscode.workspace.saveAll();
+    // });
   });
-  
+
+  return Promise.all(editArr.map(item=>{
+    return vscode.workspace.applyEdit(item);
+  }));
   // 
   // console.log(list);
  }
-export {getPackageJson, regKey, codeReplace};
+ function exporttsv(list,path) {
+  console.log(list);
+  const content = tsvFormatRows(list.map(item=>[item.label]));
+  fs.writeFileSync(path, content);
+ }
+export {getPackageJson, regKey, codeReplace,exporttsv};

@@ -21,7 +21,19 @@
 		"onLanguage:vue"
 	],
 	"main": "./dist/extension.js",
+  
 	"contributes": {
+    "configuration": {
+      "title": "pacvueExtension",
+      "properties": {
+        "pacvueExtension.useInsideShow": {
+          "type": "string",
+          "default": "true",
+          "enum": ["false", "true"],
+          "description": "是否将国际化展示在块状内."
+        }
+      }
+    },
 		"commands": [
 			{
 				"command": "pacvueextension.replace",
@@ -38,45 +50,52 @@
 			{
 				"command": "pacvueextension.refresh",
 				"title": "refresh",
-        "icon": {
-          "light": "images/refresh.svg",
-          "dark": "images/refresh.svg"
-        }
-  
+				"icon": {
+					"light": "images/refresh.svg",
+					"dark": "images/refresh.svg"
+				}
 			},
-      {
+			{
 				"command": "pacvueextension.preview",
 				"title": "preview",
-        "icon": {
-          "light": "images/Preview.svg",
-          "dark": "images/Preview.svg"
-        }
-  
+				"icon": {
+					"light": "images/Preview.svg",
+					"dark": "images/Preview.svg"
+				}
 			},
-      {
+			{
+				"command": "pacvueextension.export",
+				"title": "导出"
+			},
+			{
 				"command": "pacvueextension.replaceAll",
 				"title": "replace text",
-        "icon": {
-          "light": "images/replaceAll.svg",
-          "dark": "images/replaceAll.svg"
-        }
+				"icon": {
+					"light": "images/replaceAll.svg",
+					"dark": "images/replaceAll.svg"
+				}
 			}
 		],
 		"menus": {
-      "view/item/context": [
+			"view/item/context": [
 				{
 					"command": "pacvueextension.refresh",
 					"when": "view == pacvueextension.pacvue.info && viewItem == dependency",
 					"group": "inline"
 				},
-        {
+				{
 					"command": "pacvueextension.replaceAll",
 					"when": "view == pacvueextension.pacvue.info && viewItem == dependency",
 					"group": "inline"
 				},
-        {
+				{
 					"command": "pacvueextension.preview",
 					"when": "view == pacvueextension.pacvue.info && viewItem == dependencyItem",
+					"group": "inline"
+				},
+				{
+					"command": "pacvueextension.export",
+					"when": "view == pacvueextension.pacvue.info && viewItem == dependency",
 					"group": "inline"
 				}
 			]
@@ -137,6 +156,7 @@
 	"dependencies": {
 		"@vscode/codicons": "^0.0.32",
 		"@vue/compiler-sfc": "^3.2.37",
+		"d3-dsv": "^3.0.1",
 		"download-git-repo": "^3.0.2",
 		"fs-extra": "^10.1.0",
 		"globby": "^13.1.2",

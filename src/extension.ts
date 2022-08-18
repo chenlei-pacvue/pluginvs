@@ -1,12 +1,12 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import { readConfigFile, getConfigByKey, getLangJson } from './config';
+import { readConfigFile, getConfigByKey, initI18nData } from './config';
 import { getWebviewContent, getWebviewExport, getWebviewCreatePanel } from './webview/webview';
 import {TranslateProvider} from './webview/TranslateProvider';
 import { addi18n } from './i18n/I18nCommon';
 import {FileClass} from './util/FileClass';
-import {getPackageJson, codeReplace} from './util/utils';
+import {getPackageJson, codeReplace,exporttsv} from './util/utils';
 var fs = require('fs');
 import {
 	WebviewView,
@@ -140,38 +140,7 @@ export function activate(context: vscode.ExtensionContext) {
 	}
 	// todo 增加全局性的文件数据	
 	const config = getConfigByKey();
-	const useLang = config.useLang;
-	const langDist = config.langDist;
-  const langtype = typeof langDist;
-  global.config= config;
-  global.langtype = langtype;
-  let langmap = {};
-  if (langtype === 'string') {
-    let langFile = vscode.workspace.workspaceFolders ? `${vscode.workspace.workspaceFolders[0].uri.fsPath}/${langDist}/${useLang}.js` : '';
-    langmap = getLangJson(path.resolve(langFile));
-  } else {
-    Object.keys(langDist).forEach(item => {
-      let langMapCoch = {};
-      let langFile = vscode.workspace.workspaceFolders ? `${vscode.workspace.workspaceFolders[0].uri.fsPath}/${langDist[item]}/${useLang}.js` : '';
-      langMapCoch = getLangJson(path.resolve(langFile));
-      langmap[item] = langMapCoch;
-    });
-  }
-	global.langmap = langmap;
-	let MapforValue:any = {};
-  if (langtype === 'string') {
-    for (let key in langmap) {
-      MapforValue[langmap[key]] = key;
-    }
-  } else {
-    for (let key in langmap) {
-      MapforValue[key] = {};
-      for (let keyItem in langmap[key]) {
-        MapforValue[key][langmap[key][keyItem]] = keyItem;
-      }
-    }
-  }
-  global.MapforValue = MapforValue;
+  initI18nData();
 	console.log('Congratulations, your extension "pacvueextension" is now active!!');
 	vscode.languages.registerHoverProvider(['javascript', 'vue'], {
 		provideHover(doc: vscode.TextDocument, position: Position) {
@@ -232,27 +201,42 @@ export function activate(context: vscode.ExtensionContext) {
 
 	
 	// context.subscriptions.push(disposables);
-
-	
-	context.subscriptions.push(
-		vscode.window.onDidChangeActiveTextEditor(editor => {
-			if (editor) {
-				addi18n();
-			}
-		}, null)
-	);
-
-	context.subscriptions.push(
-		vscode.workspace.onDidSaveTextDocument(() => {
-			addi18n();
-		}, null)
-	);
-	addi18n();
   const rootPath =
   vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0
     ? vscode.workspace.workspaceFolders[0].uri.fsPath
     : undefined;
     let translateP = new TranslateProvider(rootPath);
+	
+	context.subscriptions.push(
+		vscode.window.onDidChangeActiveTextEditor(editor => {
+			if (editor) {
+				addi18n(translateP);
+			}
+		}, null)
+	);
+
+	context.subscriptions.push(
+		vscode.workspace.onDidSaveTextDocument((editor) => {
+      let langDistarr = [];
+      for (let i in global.langDist) {
+        langDistarr.push(global.langDist[i]);
+      }
+      let include = langDistarr.some(item=> {
+        if(editor.uri.path.indexOf(item)!==-1) {return true;};
+      });
+      if (include) {
+        getConfigByKey();
+        initI18nData();
+      } else if (editor.uri.path.indexOf('pacvue.config.json')!==-1){
+        getConfigByKey();
+        initI18nData();
+      } else {
+        addi18n(translateP);
+      }
+		}, null)
+	);
+	addi18n(translateP);
+ 
   let refresh = vscode.commands.registerCommand('pacvueextension.refresh', (x) => {
     translateP.refresh();
     });
@@ -265,10 +249,17 @@ let preview = vscode.commands.registerCommand('pacvueextension.preview', (x) => 
     vscode.window.showTextDocument(doc);
   });
 });
-let replaceAll = vscode.commands.registerCommand('pacvueextension.replaceAll', (x) => {
-  codeReplace(translateP.enumFolder(x.pathroot));
+let replaceAll = vscode.commands.registerCommand('pacvueextension.replaceAll', async (x) => {
+  await codeReplace(translateP.enumFolder(x.pathroot));
+  await vscode.workspace.saveAll();
+  translateP.refresh();
 });
 context.subscriptions.push(replaceAll);
+let exporttsvcontext = vscode.commands.registerCommand('pacvueextension.export', async (x) => {
+  console.log(x);
+  await exporttsv(translateP.enumFolder(x.pathroot),x.pathroot+'/'+x.label.replace('/','-'));
+});
+context.subscriptions.push(exporttsvcontext);
   vscode.window.createTreeView('pacvueextension.pacvue.info', {
     treeDataProvider: translateP
   });

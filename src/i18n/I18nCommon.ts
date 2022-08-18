@@ -13,7 +13,7 @@ import {getPackageJson} from '../util/utils';
 var fs = require("fs");
 const annotationDecoration: TextEditorDecorationType = window.createTextEditorDecorationType({
   after: {
-    margin: '0 0 0 3em',
+    margin: '0 0 0 0em',
     textDecoration: 'none'
   },
   rangeBehavior: DecorationRangeBehavior.ClosedOpen
@@ -47,28 +47,48 @@ export function transformPosition(pos: Position, editorText: string, toLastCol?:
   }
   return new Range(first, last);
 }
-export const addi18n = function () {
+export const addi18n = function (treeProvider) {
   const activeEditor = window.activeTextEditor;
   if (!activeEditor) {return;}
-  let code = activeEditor.document.getText();
-  const positions = getRegexMatches({}, code);
   let decorations = [];
-  decorations = (positions || []).map(pos => {
-    const toLastCol = true;
-    const range = transformPosition(pos, code, toLastCol);
-    return {
-      range,
-      renderOptions: {
-        after: {
-          color: '#999999',
-          contentText: `🐤  ${pos.cn.replace('\n', ' \\n')} 🐤`,
-          fontWeight: 'normal',
-          fontStyle: 'normal',
-          textDecoration: 'none;'
-        }
-      } as DecorationInstanceRenderOptions
-    } as DecorationOptions;
-  });
+  // console.log();
+  if(config.inline=='true') {
+    let packageName = getPackageJson(window.activeTextEditor.document.fileName, config.rootwork, vscode.workspace.workspaceFolders[0].uri.path);
+    decorations = treeProvider.enumFolder(activeEditor.document.fileName, true).map(item=>{
+      let range=new Range(new vscode.Position(item.position.vsPosStrat.line,item.position.vsPosStrat.character),new vscode.Position(item.position.vsPosEnd.line,item.position.vsPosEnd.character));
+      return {
+        range,
+        renderOptions: {
+          after: {
+            color: '#999999',
+            contentText: `🔧  ${langmap[packageName][item.label]||"为翻译词条"} 🔧`,
+            fontWeight: 'normal',
+            fontStyle: 'normal',
+            textDecoration: 'none;'
+          }
+        } as DecorationInstanceRenderOptions
+      } as DecorationOptions;
+    });
+  } else {
+    let code = activeEditor.document.getText();
+    const positions = getRegexMatches({}, code);
+    decorations = (positions || []).map(pos => {
+      const toLastCol = true;
+      const range = transformPosition(pos, code, false);
+      return {
+        range,
+        renderOptions: {
+          after: {
+            color: '#999999',
+            contentText: `🐤  ${pos.cn.replace('\n', ' \\n')} 🐤`,
+            fontWeight: 'normal',
+            fontStyle: 'normal',
+            textDecoration: 'none;'
+          }
+        } as DecorationInstanceRenderOptions
+      } as DecorationOptions;
+    });
+  }
 
   activeEditor.setDecorations(annotationDecoration, decorations);
 };
