@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -188,6 +189,8 @@ class Dependency extends vscode.TreeItem {
         light: path.join(__filename, '..', '..', 'images', 'king.svg'),
         dark: path.join(__filename, '..', '..', 'images', 'king.svg')
       };
+    } else {
+
     }
   }
   
@@ -197,7 +200,7 @@ class Dependency extends vscode.TreeItem {
     this.allNum = val;
   }
   
-  get description() {
+  get description() : string | boolean{
     if (this.contextValue === 'dependency') {
       return `(${this.allNum})`;
     } else {

@@ -86,7 +86,7 @@ class FileClass {
 
       fillColum.push(regEn.exec(i)[0]);
     }
-    fillColum.shift(0);
+    fillColum.shift();
     return {
       layoutX: fillColum,
       layoutY: [ExcelProp[1], ExcelProp[3]]
