@@ -53,7 +53,6 @@ export const addi18n = function (treeProvider) {
   let decorations = [];
   // console.log();
   if(config.inline=='true') {
-    console.log(activeEditor.document.fileName);
     let packageName = getPackageJson(window.activeTextEditor.document.fileName, config.rootwork, vscode.workspace.workspaceFolders[0].uri.fsPath);
     
     decorations = treeProvider.enumFolder(activeEditor.document.fileName, true).map(item=>{
