@@ -68,7 +68,6 @@ export class TranslateProvider implements vscode.TreeDataProvider<Dependency> {
     bianli(ast);
   }
   enumFolder(pathroot: string, inside?: boolean) {
-    console.log(pathroot);
     let list:Array<Dependency> = [];
     try{
       let files = [];

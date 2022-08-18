@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import * as path from 'path';
 import {
   DecorationInstanceRenderOptions,
   DecorationOptions,
@@ -62,7 +63,7 @@ export const addi18n = function (treeProvider) {
         renderOptions: {
           after: {
             color: '#999999',
-            contentText: `🔧  ${langmap[packageName][item.label]||"为翻译词条"} 🔧`,
+            contentText: `🔧   ${langmap[packageName]? langmap[packageName][item.label]:langmap['AllIn'][item.label] ||"为翻译词条"} 🔧`,
             fontWeight: 'normal',
             fontStyle: 'normal',
             textDecoration: 'none;'
@@ -128,9 +129,9 @@ function getRegexMatches(I18N, code: string) {
         } else {
           let mainArr = [];
           try {
-            let folders = fs.readdirSync(vscode.workspace.workspaceFolders[0].uri.fsPath+'/' + config.rootwork);
+            let folders = fs.readdirSync(path.join(vscode.workspace.workspaceFolders[0].uri.fsPath, config.rootwork));
             folders.forEach(item => {
-              let packages = JSON.parse(fs.readFileSync(vscode.workspace.workspaceFolders[0].uri.fsPath+'/' + config.rootwork+"/"+item+'/package.json', 'utf-8'));
+              let packages = JSON.parse(fs.readFileSync(path.join(vscode.workspace.workspaceFolders[0].uri.fsPath, config.rootwork,item,'package.json'), 'utf-8'));
               mainArr.push(packages.name);
             });
           } catch (error) {
