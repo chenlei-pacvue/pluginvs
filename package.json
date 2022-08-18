@@ -21,19 +21,21 @@
 		"onLanguage:vue"
 	],
 	"main": "./dist/extension.js",
-  
 	"contributes": {
-    "configuration": {
-      "title": "pacvueExtension",
-      "properties": {
-        "pacvueExtension.useInsideShow": {
-          "type": "string",
-          "default": "true",
-          "enum": ["false", "true"],
-          "description": "是否将国际化展示在块状内."
-        }
-      }
-    },
+		"configuration": {
+			"title": "pacvueExtension",
+			"properties": {
+				"pacvueExtension.useInsideShow": {
+					"type": "string",
+					"default": "true",
+					"enum": [
+						"false",
+						"true"
+					],
+					"description": "是否将国际化展示在块状内."
+				}
+			}
+		},
 		"commands": [
 			{
 				"command": "pacvueextension.replace",
@@ -158,6 +160,7 @@
 		"@vue/compiler-sfc": "^3.2.37",
 		"d3-dsv": "^3.0.1",
 		"download-git-repo": "^3.0.2",
+		"electron": "^20.0.3",
 		"fs-extra": "^10.1.0",
 		"globby": "^13.1.2",
 		"lodash": "^4.17.21",

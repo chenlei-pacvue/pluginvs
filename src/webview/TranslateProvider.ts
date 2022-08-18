@@ -68,13 +68,15 @@ export class TranslateProvider implements vscode.TreeDataProvider<Dependency> {
     bianli(ast);
   }
   enumFolder(pathroot: string, inside?: boolean) {
+    console.log(pathroot);
     let list:Array<Dependency> = [];
     try{
       let files = [];
       if (pathroot.endsWith('.js')|| pathroot.endsWith('.vue')|| pathroot.endsWith('.jsx')|| pathroot.endsWith('.ts')|| pathroot.endsWith('.tsx')){
         files=[pathroot];
       } else {
-       files = globby.globbySync([`${pathroot}/src/**/*.+(vue|js|jsx)`], {expandDirectories:{},gitignore: true,cwd:vscode.workspace.workspaceFolders[0].uri.path});
+        let pathss = `${path.join(pathroot,'src','**',"*")}.+(vue|js|jsx)`;
+       files = globby.globbySync([pathss.replace(/\\/g,'/')], {expandDirectories:{},gitignore: true,cwd:vscode.workspace.workspaceFolders[0].uri.fsPath});
       }
       files.forEach(item => {
         let s = new compilerSFC.MagicString(fs.readFileSync(item,'utf-8'));
@@ -152,13 +154,14 @@ export class TranslateProvider implements vscode.TreeDataProvider<Dependency> {
     });
    }else {
     // 遍历文件夹 找到项目名称
-    let folders = fs.readdirSync(vscode.workspace.workspaceFolders[0].uri.path+'/' + config.rootwork);
+    
+    let folders = fs.readdirSync(path.join(vscode.workspace.workspaceFolders[0].uri._fsPath, config.rootwork));
     let dependencyList: Array<Dependency> = [];
     folders.forEach((item)=> {
-      if (fs.existsSync(vscode.workspace.workspaceFolders[0].uri.path+'/' + config.rootwork+"/"+item+'/package.json')) {
+      if (fs.existsSync(path.join(vscode.workspace.workspaceFolders[0].uri.fsPath, config.rootwork,item,'package.json'))) {
 
-        let packages = JSON.parse(fs.readFileSync(vscode.workspace.workspaceFolders[0].uri.path+'/' + config.rootwork+"/"+item+'/package.json', 'utf-8'));
-        dependencyList.push(new Dependency(vscode.TreeItemCollapsibleState.Collapsed, packages.name,  vscode.workspace.workspaceFolders[0].uri.path+'/' + config.rootwork+"/"+item,null, this.enumFolder(vscode.workspace.workspaceFolders[0].uri.path+'/' + config.rootwork+"/"+item).length));
+        let packages = JSON.parse(fs.readFileSync(path.join(vscode.workspace.workspaceFolders[0].uri.fsPath, config.rootwork,item,'package.json'), 'utf-8'));
+        dependencyList.push(new Dependency(vscode.TreeItemCollapsibleState.Collapsed, packages.name,  path.join(vscode.workspace.workspaceFolders[0].uri.fsPath, config.rootwork,item),null, this.enumFolder(path.join(vscode.workspace.workspaceFolders[0].uri.fsPath, config.rootwork,item)).length));
       }
     });
     this.dependencyLists = dependencyList;

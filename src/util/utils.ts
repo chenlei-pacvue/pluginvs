@@ -1,10 +1,11 @@
 import * as vscode from 'vscode';
 var fs = require("fs");
+import * as path from 'path';
 import { tsvFormatRows } from 'd3-dsv';
 const compilerSFC = require('@vue/compiler-sfc');
 function getPackageJson (fileName, rootwork, workuri) {
-  let roots = `${workuri}/${rootwork}`;
-  let p1 = fileName.split(roots)[1].split('/')[1];
+  let roots = path.join(workuri,rootwork).replace(/\\/g,'/');
+  let p1 = fileName.replace(/\\/g,'/').split(roots)[1].split('/')[1];
   let packages = JSON.parse(fs.readFileSync(roots+"/"+p1+'/package.json', 'utf-8'));
   return packages.name;
 }
@@ -26,16 +27,17 @@ function codeReplace(list) {
   });
   let mainArr =[];
   try {
-    let folders = fs.readdirSync(vscode.workspace.workspaceFolders[0].uri.path+'/' + config.rootwork);
+    
+    let folders = fs.readdirSync(vscode.workspace.workspaceFolders[0].uri.fsPath+'/' + config.rootwork);
     folders.forEach(item => {
-      let packages = JSON.parse(fs.readFileSync(vscode.workspace.workspaceFolders[0].uri.path+'/' + config.rootwork+"/"+item+'/package.json', 'utf-8'));
+      let packages = JSON.parse(fs.readFileSync(vscode.workspace.workspaceFolders[0].uri.fsPath+'/' + config.rootwork+"/"+item+'/package.json', 'utf-8'));
       mainArr.push(packages.name);
     });
   } catch (error) {
       // console.log("读取根文件夹报错 可能出现了空的文件夹");
   }
   map.forEach((item,key) => {
-    let packageName = getPackageJson(key, config.rootwork, vscode.workspace.workspaceFolders[0].uri.path);
+    let packageName = getPackageJson(key, config.rootwork, vscode.workspace.workspaceFolders[0].uri.fsPath);
     let maps = {};
     let isInclude = mainArr.some(item => {
       if(MapforValue[packageName]) {

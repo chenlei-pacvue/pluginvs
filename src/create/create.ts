@@ -50,6 +50,7 @@ export const createProject = async function (path: String,name: string): Promise
         { clone: true },
         function (err) {
           if (err) {
+            console.log(err);
             // console.log('\x1B[31m%s\x1B[0m', err);
             vscode.window.showErrorMessage(err);
           } else {

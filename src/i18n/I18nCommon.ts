@@ -53,7 +53,9 @@ export const addi18n = function (treeProvider) {
   let decorations = [];
   // console.log();
   if(config.inline=='true') {
-    let packageName = getPackageJson(window.activeTextEditor.document.fileName, config.rootwork, vscode.workspace.workspaceFolders[0].uri.path);
+    console.log(activeEditor.document.fileName);
+    let packageName = getPackageJson(window.activeTextEditor.document.fileName, config.rootwork, vscode.workspace.workspaceFolders[0].uri.fsPath);
+    
     decorations = treeProvider.enumFolder(activeEditor.document.fileName, true).map(item=>{
       let range=new Range(new vscode.Position(item.position.vsPosStrat.line,item.position.vsPosStrat.character),new vscode.Position(item.position.vsPosEnd.line,item.position.vsPosEnd.character));
       return {
@@ -127,9 +129,9 @@ function getRegexMatches(I18N, code: string) {
         } else {
           let mainArr = [];
           try {
-            let folders = fs.readdirSync(vscode.workspace.workspaceFolders[0].uri.path+'/' + config.rootwork);
+            let folders = fs.readdirSync(vscode.workspace.workspaceFolders[0].uri.fsPath+'/' + config.rootwork);
             folders.forEach(item => {
-              let packages = JSON.parse(fs.readFileSync(vscode.workspace.workspaceFolders[0].uri.path+'/' + config.rootwork+"/"+item+'/package.json', 'utf-8'));
+              let packages = JSON.parse(fs.readFileSync(vscode.workspace.workspaceFolders[0].uri.fsPath+'/' + config.rootwork+"/"+item+'/package.json', 'utf-8'));
               mainArr.push(packages.name);
             });
           } catch (error) {
@@ -137,7 +139,7 @@ function getRegexMatches(I18N, code: string) {
           }
           let map = {};
         let isInclude = mainArr.some(item => {
-          let packageName = getPackageJson(window.activeTextEditor.document.fileName, config.rootwork, vscode.workspace.workspaceFolders[0].uri.path);
+          let packageName = getPackageJson(window.activeTextEditor.document.fileName, config.rootwork, vscode.workspace.workspaceFolders[0].uri.fsPath);
           if(global.langmap[packageName]) {
             map = global.langmap[item];
             return true;

@@ -153,9 +153,9 @@ export function activate(context: vscode.ExtensionContext) {
       } else {
         let mainArr =[];
         try {
-          let folders = fs.readdirSync(vscode.workspace.workspaceFolders[0].uri.path+'/' + config.rootwork);
+          let folders = fs.readdirSync(vscode.workspace.workspaceFolders[0].uri.fsPath+'/' + config.rootwork);
           folders.forEach(item => {
-            let packages = JSON.parse(fs.readFileSync(vscode.workspace.workspaceFolders[0].uri.path+'/' + config.rootwork+"/"+item+'/package.json', 'utf-8'));
+            let packages = JSON.parse(fs.readFileSync(vscode.workspace.workspaceFolders[0].uri.fsPath+'/' + config.rootwork+"/"+item+'/package.json', 'utf-8'));
             mainArr.push(packages.name);
           });
         } catch (error) {
@@ -163,7 +163,7 @@ export function activate(context: vscode.ExtensionContext) {
         }
         let map = {};
         let isInclude = mainArr.some(item => {
-          let packageName = getPackageJson(window.activeTextEditor.document.fileName, config.rootwork, vscode.workspace.workspaceFolders[0].uri.path);
+          let packageName = getPackageJson(window.activeTextEditor.document.fileName, config.rootwork, vscode.workspace.workspaceFolders[0].uri.fsPath);
           if(MapforValue[packageName]) {
             map = MapforValue[item];
             return true;
