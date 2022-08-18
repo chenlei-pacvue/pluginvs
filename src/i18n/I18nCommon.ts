@@ -122,7 +122,6 @@ function getRegexMatches(I18N, code: string) {
           position.code = exc2[0].substring(1, exc2[0].length - 1);
         }
         (position as any).line = index;
-        // console.log(index, position.code, global.langmap[position.code])
         if (global.langtype === 'string') {
           position.cn = global.langmap[position.code];
         } else {

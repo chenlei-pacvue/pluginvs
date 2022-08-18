@@ -256,7 +256,6 @@ let replaceAll = vscode.commands.registerCommand('pacvueextension.replaceAll', a
 });
 context.subscriptions.push(replaceAll);
 let exporttsvcontext = vscode.commands.registerCommand('pacvueextension.export', async (x) => {
-  console.log(x);
   await exporttsv(translateP.enumFolder(x.pathroot),x.pathroot+'/'+x.label.replace('/','-'));
 });
 context.subscriptions.push(exporttsvcontext);

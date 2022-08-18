@@ -60,11 +60,8 @@ function codeReplace(list) {
       // s.overwrite(items.position.start,items.position.end,'sss');
     });
     // new vscode.Position(1);
-    // console.log(item,key,s.toString());
+
     editArr.push(edit);
-    // vscode.workspace.applyEdit(edit).then(()=>{
-    //   vscode.workspace.saveAll();
-    // });
   });
 
   return Promise.all(editArr.map(item=>{
@@ -74,7 +71,6 @@ function codeReplace(list) {
   // console.log(list);
  }
  function exporttsv(list,path) {
-  console.log(list);
   const content = tsvFormatRows(list.map(item=>[item.label]));
   fs.writeFileSync(path, content);
  }
