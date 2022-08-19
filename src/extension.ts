@@ -251,6 +251,7 @@ let replaceAll = vscode.commands.registerCommand('pacvueextension.replaceAll', a
   codeReplace(translateP.enumFolder(x.pathroot)).then(async () => {
     await vscode.workspace.saveAll();
     translateP.refresh();
+    vscode.window.showInformationMessage('完成');
   });
   
 });

@@ -4,7 +4,8 @@ export const getWebviewContent = function(webview: Webview, extensionUri: Uri) {
   const stylesUri = getUri(webview, extensionUri, ["webview-ui", "build", "assets", "main.css"]);
   // The JS file from the Vue build output
   const scriptUri = getUri(webview, extensionUri, ["webview-ui", "build", "assets", "tools.js"]);
-  const iconhref = getUri(webview, extensionUri, ['node_modules', '@vscode/codicons', 'dist', 'codicon.css']);
+  // const iconhref = getUri(webview, extensionUri, ['node_modules', '@vscode/codicons', 'dist', 'codicon.css']);
+  const iconhref = getUri(webview, extensionUri, ['src', 'assets', 'codicon.css']);
 return  `
 <!DOCTYPE html>
 <html lang="en">
