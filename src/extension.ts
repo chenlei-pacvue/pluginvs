@@ -189,8 +189,6 @@ export function activate(context: vscode.ExtensionContext) {
 		} catch (error) {
 			console.log(error);
 		}
-
-		vscode.window.showInformationMessage('Hello World from pacvueExtension!!');
 	});
 
 	let exportExcel = vscode.commands.registerCommand('pacvueextension.exportExcel', (x) => {

@@ -34,9 +34,9 @@ function codeReplace(list) {
   let mainArr =[];
   try {
     
-    let folders = fs.readdirSync(vscode.workspace.workspaceFolders[0].uri.fsPath+'/' + config.rootwork);
+    let folders = fs.readdirSync(path.join(vscode.workspace.workspaceFolders[0].uri.fsPath,config.rootwork));
     folders.forEach(item => {
-      let packages = JSON.parse(fs.readFileSync(vscode.workspace.workspaceFolders[0].uri.fsPath+'/' + config.rootwork+"/"+item+'/package.json', 'utf-8'));
+      let packages = JSON.parse(fs.readFileSync(path.join(vscode.workspace.workspaceFolders[0].uri.fsPath,config.rootwork,item,'package.json'), 'utf-8'));
       mainArr.push(packages.name);
     });
   } catch (error) {
