@@ -73,7 +73,7 @@ export class TranslateProvider implements vscode.TreeDataProvider<Dependency> {
       let files = [];
       if (pathroot.endsWith('.js')|| pathroot.endsWith('.vue')|| pathroot.endsWith('.jsx')|| pathroot.endsWith('.ts')|| pathroot.endsWith('.tsx')){
         files=[pathroot];
-      } else {
+      } else if (fs.statSync(pathroot).isDirectory()){
         let pathss = `${path.join(pathroot,'src','**',"*")}.+(vue|js|jsx)`;
        files = globby.globbySync([pathss.replace(/\\/g,'/')], {expandDirectories:{},gitignore: true,cwd:vscode.workspace.workspaceFolders[0].uri.fsPath});
       }
@@ -86,7 +86,7 @@ export class TranslateProvider implements vscode.TreeDataProvider<Dependency> {
            
             compilerSFC.walk(compilerSFC.compileScript(sfc.descriptor,{filename:'a.vue'}).scriptSetupAst, {
               enter(node, parent, prop, index) {
-                if (node.type === 'Identifier' && node.name === '$t') { 
+                if (node.type === 'Identifier' && node.name === '$t' && parent.arguments) { 
                   let pos = new Position(parent.arguments[0].start+1, parent.arguments[0].end-1, parent.arguments[0].value,item, new vscode.Position(parent.arguments[0].loc.start.line-2 + sfc.descriptor.scriptSetup.loc.start.line,parent.arguments[0].loc.start.column+1),new vscode.Position(parent.arguments[0].loc.end.line-2+ sfc.descriptor.scriptSetup.loc.start.line,parent.arguments[0].loc.end.column-1));
                   let {test} = regKey(config.reg,pos.code);
                   if ((!test&&!inside)|| (inside&&test)) {
@@ -100,7 +100,7 @@ export class TranslateProvider implements vscode.TreeDataProvider<Dependency> {
           if (sfc.descriptor.script) {
             compilerSFC.walk(compilerSFC.compileScript(sfc.descriptor,{filename:'a.vue'}).scriptAst, {
               enter(node, parent, prop, index) {
-                if (node.type === 'Identifier' && node.name === '$t') {
+                if (node.type === 'Identifier' && node.name === '$t' && parent.arguments) {
                  let pos = new Position(parent.arguments[0].start+1, parent.arguments[0].end-1, parent.arguments[0].value,item, new vscode.Position(parent.arguments[0].loc.start.line-2+ sfc.descriptor.script.loc.start.line,parent.arguments[0].loc.start.column+1),new vscode.Position(parent.arguments[0].loc.end.line-2+ sfc.descriptor.script.loc.start.line,parent.arguments[0].loc.end.column-1));
                   let {test} = regKey(config.reg,pos.code);
                   if ((!test&&!inside)|| (inside&&test)) {
