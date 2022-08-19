@@ -248,9 +248,11 @@ let preview = vscode.commands.registerCommand('pacvueextension.preview', (x) => 
   });
 });
 let replaceAll = vscode.commands.registerCommand('pacvueextension.replaceAll', async (x) => {
-  await codeReplace(translateP.enumFolder(x.pathroot));
-  await vscode.workspace.saveAll();
-  translateP.refresh();
+  codeReplace(translateP.enumFolder(x.pathroot)).then(async () => {
+    await vscode.workspace.saveAll();
+    translateP.refresh();
+  });
+  
 });
 context.subscriptions.push(replaceAll);
 let exporttsvcontext = vscode.commands.registerCommand('pacvueextension.export', async (x) => {
