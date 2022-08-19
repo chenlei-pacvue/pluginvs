@@ -245,8 +245,9 @@ export function activate(context: vscode.ExtensionContext) {
   });
 context.subscriptions.push(itemclick);
 let preview = vscode.commands.registerCommand('pacvueextension.preview', (x) => {
+  console.log(x.position.vsPosStrat.line);
   vscode.workspace.openTextDocument(vscode.Uri.file(x.pathroot)).then(doc=> {
-    vscode.window.showTextDocument(doc);
+    vscode.window.showTextDocument(doc,{selection:new vscode.Range(new vscode.Position(x.position.vsPosStrat.line,x.position.vsPosStrat.character),new vscode.Position(x.position.vsPosEnd.line,x.position.vsPosEnd.character))} );
   });
 });
 let replaceAll = vscode.commands.registerCommand('pacvueextension.replaceAll', async (x) => {

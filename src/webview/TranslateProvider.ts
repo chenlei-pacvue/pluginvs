@@ -206,7 +206,8 @@ class Dependency extends vscode.TreeItem {
     if (this.contextValue === 'dependency') {
       return `(${this.allNum})`;
     } else {
-      return '';
+
+      return this.pathroot.split(/[\\/]/).pop();
     }
     
   }
