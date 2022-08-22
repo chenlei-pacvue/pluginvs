@@ -22,6 +22,8 @@ import * as path from 'path';
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
+  
+  global.channel = vscode.window.createOutputChannel('pacvue');
   let createPanel = vscode.commands.registerCommand('pacvueextension.showCreate', () => {
 		const panel = vscode.window.createWebviewPanel(
 			'sidebar',
@@ -255,6 +257,8 @@ let replaceAll = vscode.commands.registerCommand('pacvueextension.replaceAll', a
   });
   
 });
+
+
 context.subscriptions.push(replaceAll);
 let exporttsvcontext = vscode.commands.registerCommand('pacvueextension.export', async (x) => {
   await exporttsv(translateP.enumFolder(x.pathroot),x.pathroot+'/'+x.label.replace('/','-'));

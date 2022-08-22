@@ -33,9 +33,34 @@ export class TranslateProvider implements vscode.TreeDataProvider<Dependency> {
   }
   refresh(): void {
     this._onDidChangeTreeData.fire();
-}
+  }
+  getI18nText(text) {
+    let reg = /"(.+?)"/gi;
+    let ref = text.replace(/'/g,'"').match(reg);
+    return ref[0].replace(/"/g,'');
+  }
   getI18nPositionInHtml(ast,uri,list,descriptor,inside) {
+    let ctx = this;
     function bianli(tree,parent?, place?) {
+      if (tree.props?.length>0) {
+        tree.props.forEach(item => {
+          
+          if (item.exp?.children?.length>0){
+            item.exp.children.reduce((pre,cur)=> {
+              if(pre.content==='_ctx.$t') {      
+                const loc = pre.loc;
+                let newcode =ctx.getI18nText(cur);
+                let {test} = regKey(config.reg,newcode);
+                if ((!test&&!inside)  || (inside&&test)) {
+                  let pos = new Position(loc.end.offset + 2, loc.end.offset + 2 + newcode.length, newcode, uri, new vscode.Position(loc.end.line-2+descriptor.template.loc.start.line,loc.end.column+1),new vscode.Position(loc.end.line-2+descriptor.template.loc.start.line,loc.end.column+1 + newcode.length));
+                  list.push(new Dependency(vscode.TreeItemCollapsibleState.None,pos.code,pos.uri,pos));
+                }
+              }
+              return cur;
+            });
+          }
+        });
+      }
       if (tree?.children?.length>0 ) {
         tree.children.forEach((element,index) => {
           bianli(element,tree, index);
@@ -52,9 +77,7 @@ export class TranslateProvider implements vscode.TreeDataProvider<Dependency> {
         if (tree.content === '_ctx.$t') {
           const loc = tree.loc;
           let newStr = parent.children[place+1].replace(/'/g, '"');
-          let reg = /"(.+?)"/gi;
-          let ref = newStr.match(reg);
-          let newcode =ref[0].replace(/"/g,'');
+          let newcode =ctx.getI18nText(newStr);
           let {test} = regKey(config.reg,newcode);
           if ((!test&&!inside)  || (inside&&test)) {
             let pos = new Position(loc.end.offset + 2, loc.end.offset + 2 + newcode.length, newcode, uri, new vscode.Position(loc.end.line-2+descriptor.template.loc.start.line,loc.end.column+1),new vscode.Position(loc.end.line-2+descriptor.template.loc.start.line,loc.end.column+1 + newcode.length));
@@ -67,13 +90,13 @@ export class TranslateProvider implements vscode.TreeDataProvider<Dependency> {
     }
     bianli(ast);
   }
-  enumFolder(pathroot: string, inside?: boolean) {
+  enumFolder(pathroot: string, inside?: boolean, document?) {
     let list:Array<Dependency> = [];
     try{
       let files = [];
       if (pathroot.endsWith('.js')|| pathroot.endsWith('.vue')|| pathroot.endsWith('.jsx')|| pathroot.endsWith('.ts')|| pathroot.endsWith('.tsx')){
         files=[pathroot];
-      } else if (fs.statSync(pathroot).isDirectory()){
+      } else if (document?.isDirty || fs.statSync(pathroot).isDirectory()){
         let pathss = `${path.join(pathroot,'src','**',"*")}.+(vue|js|jsx)`;
        files = globby.globbySync([pathss.replace(/\\/g,'/')], {expandDirectories:{},gitignore: true,cwd:vscode.workspace.workspaceFolders[0].uri.fsPath});
       }

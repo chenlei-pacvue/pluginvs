@@ -23,6 +23,7 @@ function regKey(keyArr,code) {
   return {test:reg.test(code), macths: match};
  }
 function codeReplace(list) {
+  channel.clear();
   let map = new Map();
   let editArr = [];
 
@@ -55,6 +56,7 @@ function codeReplace(list) {
       maps = MapforValue.AllIn;
     }
     const edit = new vscode.WorkspaceEdit();
+    channel.appendLine(key);
     let s = new compilerSFC.MagicString(fs.readFileSync(key,'utf-8'));
     item.forEach(items=> {
       if (maps[items.label]) {
