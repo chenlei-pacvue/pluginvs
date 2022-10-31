@@ -1,8 +1,10 @@
 function regKey(keyArr,code) {
-  keyArr.join('|');
-  let reg = new RegExp(`^(${keyArr.join('|')})[0-9]*[0-9]$`,'g');
-  let reg1 = new RegExp(`(${keyArr.join('|')})[0-9]*[0-9]`,'g');
-  let match = code.match(reg1);
-  return {test:reg.test(code), macths: match};
+  let reg = /\((.+?|\n)*\)/gi;
+  let x = `(
+    "1.The scheduler will always work on the campaign (including enabled and paused), unless it is removed from the scheduler or the scheduler is closed."
+  )`; 
+
+  return x.match(reg);
  }
+
  console.log(regKey(['event','ai'],'event100'));

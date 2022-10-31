@@ -7,6 +7,7 @@ import {TranslateProvider} from './webview/TranslateProvider';
 import { addi18n } from './i18n/I18nCommon';
 import {FileClass} from './util/FileClass';
 import {getPackageJson, codeReplace,exporttsv} from './util/utils';
+
 var fs = require('fs');
 import {
 	WebviewView,
@@ -22,7 +23,7 @@ import * as path from 'path';
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-  
+
   global.channel = vscode.window.createOutputChannel('pacvue');
   let createPanel = vscode.commands.registerCommand('pacvueextension.showCreate', () => {
 		const panel = vscode.window.createWebviewPanel(

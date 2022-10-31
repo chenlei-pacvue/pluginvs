@@ -164,6 +164,7 @@
 		"fs-extra": "^10.1.0",
 		"globby": "^13.1.2",
 		"lodash": "^4.17.21",
+		"magic-string": "^0.26.7",
 		"single-line-log": "^1.1.2",
 		"xlsx": "^0.18.5",
 		"xlsx-style": "^0.8.13"
