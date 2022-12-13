@@ -150,7 +150,7 @@ class FileClass {
     try {
       let files = fs.readdirSync(this.outfilePath);
       files.forEach(item => {
-        
+        console.log(item);
         if (item.indexOf('.')!==0){
           let data = fs.readFileSync(
             `${this.outfilePath}/${item}`,

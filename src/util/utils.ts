@@ -25,6 +25,7 @@ function regKey(keyArr,code) {
 function codeReplace(list) {
   channel.clear();
   let map = new Map();
+
   let editArr = [];
 
   list.forEach(item => {
@@ -36,29 +37,40 @@ function codeReplace(list) {
   try {
     
     let folders = fs.readdirSync(path.join(vscode.workspace.workspaceFolders[0].uri.fsPath,config.rootwork));
+  
     folders.forEach(item => {
-      let packages = JSON.parse(fs.readFileSync(path.join(vscode.workspace.workspaceFolders[0].uri.fsPath,config.rootwork,item,'package.json'), 'utf-8'));
-      mainArr.push(packages.name);
+      if (fs.existsSync(path.join(vscode.workspace.workspaceFolders[0].uri.fsPath,config.rootwork,item,'package.json'))) {
+
+        let packages = JSON.parse(fs.readFileSync(path.join(vscode.workspace.workspaceFolders[0].uri.fsPath,config.rootwork,item,'package.json'), 'utf-8'));
+       
+        mainArr.push(packages.name);
+      }
     });
   } catch (error) {
-      // console.log("读取根文件夹报错 可能出现了空的文件夹");
+      console.log("读取根文件夹报错 可能出现了空的文件夹");
   }
+
+
   map.forEach((item,key) => {
     let packageName = getPackageJson(key, config.rootwork, vscode.workspace.workspaceFolders[0].uri.fsPath);
     let maps = {};
+   
     let isInclude = mainArr.some(item => {
-      if(MapforValue[packageName]) {
-        maps = MapforValue[item];
+      if(MapforValue[packageName] && item===packageName) {
+       
+        maps = Object.assign(maps,MapforValue[item]||{});
         return true;
       }
     });
     if (!isInclude) {
       maps = MapforValue.AllIn;
     }
+    
     const edit = new vscode.WorkspaceEdit();
     channel.appendLine(key);
     let s = new compilerSFC.MagicString(fs.readFileSync(key,'utf-8'));
     item.forEach(items=> {
+     
       if (maps[items.label]) {
         edit.replace(
           vscode.Uri.file(key),
