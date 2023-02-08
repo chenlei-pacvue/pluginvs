@@ -62,7 +62,7 @@ export const addi18n = function (treeProvider) {
         renderOptions: {
           after: {
             color: '#999999',
-            contentText: `🔧   ${langmap[packageName]? langmap[packageName][item.label]:langmap['AllIn'][item.label] ||"为翻译词条"} 🔧`,
+            contentText: `🔧   ${langmap[packageName]? langmap[packageName][item.label]:langmap['AllIn'][item.label] ||"未翻译词条"} 🔧`,
             fontWeight: 'normal',
             fontStyle: 'normal',
             textDecoration: 'none;'

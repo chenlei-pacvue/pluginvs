@@ -45,18 +45,46 @@ export class TranslateProvider implements vscode.TreeDataProvider<Dependency> {
   getI18nText(text,uri) {
     // let reg = /"(.+?)"/gi;
     // let ref = text.replace(/[',`]/g, '"').match(reg);
-    let textx = text.replace(/(^s*)|(s*$)|(^[\r\n])|([\r\n]$)/g, "").substring(1,text.length-1).replace(/(^\s*)|(\s*$)/g, "");
+    // 判断` ' " 这几个符号谁出现在第一个
+    let code1 = text.indexOf('"') === -1 ? 100000:text.indexOf('"');
+    let code2 = text.indexOf("'") === -1 ? 100000:text.indexOf("'");
+    let code3 = text.indexOf('`')  === -1? 100000:text.indexOf('`');
+    let regT = '';
+    if (code1<code2 && code1<code3) {
+      regT = '"';
+    }
+    if (code2<code1 && code2<code3) {
+      regT = "'";
+    }
+    if (code3<code1 && code3<code2 ) {
+      regT = '`';
+    }
+    let textx = '';
+   
+    switch (regT) {
+      case '"':
+        textx = text.match(/\"([^]*)\"/)[1];
+        break;
+      case "'":
+        textx = text.match(/\'([^]*)\'/)[1];
+        break;
+      case '`':
+        textx = text.match(/\`([^]*)\`/)[1];
+        break;
+    }
+
+    // let textx = text.replace(/(^s*)|(s*$)|(^[\r\n])|([\r\n]$)/g, "").substring(1,text.length-1).replace(/(^\s*)|(\s*$)/g, "");
     if (text.length>2) {
-      if(uri&&uri.indexOf('BudgetManager/index')!==-1) {
-        // console.log(text,11);
-      }
+      // if(uri&&uri.indexOf('BudgetManager/index')!==-1) {
+      //   // console.log(text,11);
+      // }
       // if(uri&&uri.indexOf('Binding.vue')!==-1 && textx.indexOf(textx)!==-1) {
       //   // const s = new MagicString(fs.readFileSync(uri)).toString().indexOf(textx.substring(1,textx.length-1));
 
       //   console.log(textx );
       // }
-      let res =textx.substring(1,textx.length-1);
-      
+      // let res =textx.substring(1,textx.length-1);
+      let res = textx;
       return res;
     }
     return '';
@@ -66,6 +94,7 @@ export class TranslateProvider implements vscode.TreeDataProvider<Dependency> {
     let ctx = this;
 
     function bianli(tree, parent?, place?) {
+      
       if (tree.props?.length > 0) {
         tree.props.forEach(item => {
 
@@ -86,22 +115,20 @@ export class TranslateProvider implements vscode.TreeDataProvider<Dependency> {
                 // } else {
                 //   newcode = ctx.getI18nText(cur,uri);
                 // }
-                let reg = /\((.+?|\n)*\)/gi;
+                let reg = /\(([^)]*)\)/gi;
                 
-                // console.log(cur,111);
-                if(cur.match(reg)) {
-                  curN =cur.match(reg)[0];
-                  
-                  newcode = ctx.getI18nText(curN,uri);
-                }
-               
+                // console.log(cur,1);
+                // if(cur.match(reg)) {
+                //   curN =cur.match(reg)[0];
+                //   console.log(curN,1);
+                //   newcode = ctx.getI18nText(cur,uri);
+                // }
+                newcode = ctx.getI18nText(cur,uri);
                 
-                
-                
+         
                 if(newcode!==''){
-                  
-                  let { test } = regKey(config.reg, newcode);
-                  if ((!test && !inside) || (inside && test)) {
+                  let { test, macths } = regKey(config.reg, newcode, config.equal);
+                  if ((!test && !macths && !inside) || (inside && (test || macths)) ) {
                     let pos = new Position(loc.end.offset + 2, loc.end.offset + 2 + newcode.length, newcode, uri, new vscode.Position(loc.end.line - 2 + descriptor.template.loc.start.line, loc.end.column + 1), new vscode.Position(loc.end.line - 2 + descriptor.template.loc.start.line, loc.end.column + 1 + newcode.length));
                     list.push(new Dependency(vscode.TreeItemCollapsibleState.None, pos.code, pos.uri, pos));
                   }
@@ -126,24 +153,27 @@ export class TranslateProvider implements vscode.TreeDataProvider<Dependency> {
         });
       } else {
         if (tree.content === '_ctx.$t') {
+          
           const loc = tree.loc;
-          let newStr = parent.children[place + 1];
+          let newStr = parent.children[place + 1].replace(', [',')');
+      
           // let newStr = parent.children[place + 1];
           let newcode ='';
           let curN = '';
-          let reg = /\((.+?|\n)*\)/gi;
+          let reg = /\(([^)]*)\)/gi;
           let fulnew = newStr.replace(/[\r\n]/g,'');
-          if(fulnew.match(reg)) {
-            curN =fulnew.match(reg)[0];
+         
+          // if(fulnew.match(reg)) {
+          //   curN =fulnew.match(reg)[0];
             
-            newcode = ctx.getI18nText(curN,uri);
-          }
-          
+          //   newcode = ctx.getI18nText(curN,uri);
+          // }
+          newcode = ctx.getI18nText(curN,uri);
           if(newcode!==''){
 
             
-            let { test } = regKey(config.reg, newcode);
-            if ((!test && !inside) || (inside && test)) {
+            let { test, macths } = regKey(config.reg, newcode, config.equal);
+            if ((!test && !macths && !inside) || (inside && (test || macths)) ) {
               let pos = null;
               if (parent.children[1]&&parent.children[1].indexOf&&parent.children[1].indexOf('(\n')!==-1) {
                 
@@ -159,9 +189,7 @@ export class TranslateProvider implements vscode.TreeDataProvider<Dependency> {
                     return true;
                   }
                 });
-                if(uri&&uri.indexOf('BudgetManager/index.vue')!==-1 ) {
-                  // console.log(pArr, line,col,newcode);
-                }
+                
                 pos = new Position(loc.end.offset + 2, loc.end.offset + 2 + newcode.length, newcode, uri, new vscode.Position(loc.end.line - 2 + descriptor.template.loc.start.line+line, col), new vscode.Position(loc.end.line - 2 + descriptor.template.loc.start.line+line, col + newcode.length));
               } else {
                 pos = new Position(loc.end.offset + 2, loc.end.offset + 2 + newcode.length, newcode, uri, new vscode.Position(loc.end.line - 2 + descriptor.template.loc.start.line, loc.end.column + 1), new vscode.Position(loc.end.line - 2 + descriptor.template.loc.start.line, loc.end.column + 1 + newcode.length));
@@ -184,9 +212,10 @@ export class TranslateProvider implements vscode.TreeDataProvider<Dependency> {
       if (pathroot.endsWith('.js') || pathroot.endsWith('.vue') || pathroot.endsWith('.jsx') || pathroot.endsWith('.ts') || pathroot.endsWith('.tsx')) {
         files = [pathroot];
       } else if (document?.isDirty || fs.statSync(pathroot).isDirectory()) {
-        let pathss = `${path.join(pathroot, 'src', '**', "*")}.+(vue|js|jsx)`;
+        let pathss = `${path.join(pathroot, '**', "*")}.+(vue|js|jsx)`;
         files = globby.globbySync([pathss.replace(/\\/g, '/')], { expandDirectories: {}, gitignore: true, cwd: vscode.workspace.workspaceFolders[0].uri.fsPath });
       }
+      // console.log(files);
       files.forEach(item => {
         let s = new compilerSFC.MagicString(fs.readFileSync(item, 'utf-8'));
         if (s.toString().indexOf('$t(') == -1) { return; };
@@ -196,13 +225,13 @@ export class TranslateProvider implements vscode.TreeDataProvider<Dependency> {
 
             compilerSFC.walk(compilerSFC.compileScript(sfc.descriptor, { filename: 'a.vue' }).scriptSetupAst, {
               enter(node, parent, prop, index) {
-                if (node.type === 'Identifier' && node.name === '$t' && parent.arguments) {
                 
-                  // if(item.indexOf('Binding')!==-1) {console.log(parent.arguments[0]);}
+                if (node.type === 'Identifier' && node.name === '$t' && parent.arguments && parent.arguments[0] && (parent.arguments[0].value||parent.arguments[0].quasis)) {
+                
                   let pos = new Position(parent.arguments[0].start + 1, parent.arguments[0].end - 1, parent.arguments[0].value||parent.arguments[0].quasis[0].value.raw, item, new vscode.Position(parent.arguments[0].loc.start.line - 2 + sfc.descriptor.scriptSetup.loc.start.line, parent.arguments[0].loc.start.column + 1), new vscode.Position(parent.arguments[0].loc.end.line - 2 + sfc.descriptor.scriptSetup.loc.start.line, parent.arguments[0].loc.end.column - 1));
-
-                  let { test } = regKey(config.reg, pos.code || '');
-                  if ((!test && !inside) || (inside && test)) {
+                
+                  let { test,macths } = regKey(config.reg, pos.code || '',config.equal);
+                  if ((!test && !macths && !inside) || (inside && (test || macths)) ) {
                     list.push(new Dependency(vscode.TreeItemCollapsibleState.None, pos.code, pos.uri, pos));
                   }
 
@@ -218,8 +247,8 @@ export class TranslateProvider implements vscode.TreeDataProvider<Dependency> {
                   let pos = new Position(parent.arguments[0].start + 1, parent.arguments[0].end - 1, parent.arguments[0].value||parent.arguments[0].quasis[0].value.raw, item, new vscode.Position(parent.arguments[0].loc.start.line - 2 + sfc.descriptor.script.loc.start.line, parent.arguments[0].loc.start.column + 1), new vscode.Position(parent.arguments[0].loc.end.line - 2 + sfc.descriptor.script.loc.start.line, parent.arguments[0].loc.end.column - 1));
                   if (pos.code !== undefined) {
 
-                    let { test } = regKey(config.reg, pos.code);
-                    if ((!test && !inside) || (inside && test)) {
+                    let { test,macths } = regKey(config.reg, pos.code,config.equal);
+                    if ((!test && !macths && !inside) || (inside && (test || macths)) ) {
                       list.push(new Dependency(vscode.TreeItemCollapsibleState.None, pos.code, pos.uri, pos));
                     }
                   }
@@ -250,8 +279,8 @@ export class TranslateProvider implements vscode.TreeDataProvider<Dependency> {
 
                 let code = getText(item, parent.arguments[0].start, parent.arguments[0].end);
                 let pos = new Position(parent.arguments[0].start + 1, parent.arguments[0].end - 1, code, item, startvs, endvs);
-                let { test } = regKey(config.reg, pos.code);
-                if ((!test && !inside) || (inside && test)) {
+                let { test,macths } = regKey(config.reg, pos.code,config.equal);
+                if ((!test && !macths && !inside) || (inside && (test || macths)) ) {
                   list.push(new Dependency(vscode.TreeItemCollapsibleState.None, pos.code, pos.uri, pos));
                 }
 

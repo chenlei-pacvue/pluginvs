@@ -156,6 +156,7 @@ export function activate(context: vscode.ExtensionContext) {
       } else {
         let mainArr =[];
         try {
+          
           let folders = fs.readdirSync(vscode.workspace.workspaceFolders[0].uri.fsPath+'/' + config.rootwork);
           folders.forEach(item => {
             let packages = JSON.parse(fs.readFileSync(vscode.workspace.workspaceFolders[0].uri.fsPath+'/' + config.rootwork+"/"+item+'/package.json', 'utf-8'));
@@ -172,6 +173,7 @@ export function activate(context: vscode.ExtensionContext) {
             return true;
           }
         });
+       
         if (!isInclude) {
           map = MapforValue.AllIn;
         }
