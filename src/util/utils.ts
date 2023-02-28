@@ -16,11 +16,10 @@ function getPackageJson (fileName, rootwork, workuri) {
   return packageName;
 }
 function regKey(keyArr,code, keyArr2) {
-  keyArr.join('|');
-  keyArr2.join('|');
+ 
   let reg = new RegExp(`^(${keyArr.join('|')})[0-9]*[0-9]$`,'g');
-  let reg1 = new RegExp(`(${keyArr2.join('|')})$`,'g');
-  let match = code.match(reg1);
+  let reg1 = new RegExp(`^\\b(${keyArr2.join('|')})\\b$`);
+  let match = reg1.test(code);
   return {test:reg.test(code), macths: match};
  }
 function codeReplace(list) {

@@ -46,6 +46,7 @@ export class TranslateProvider implements vscode.TreeDataProvider<Dependency> {
     // let reg = /"(.+?)"/gi;
     // let ref = text.replace(/[',`]/g, '"').match(reg);
     // 判断` ' " 这几个符号谁出现在第一个
+  
     let code1 = text.indexOf('"') === -1 ? 100000:text.indexOf('"');
     let code2 = text.indexOf("'") === -1 ? 100000:text.indexOf("'");
     let code3 = text.indexOf('`')  === -1? 100000:text.indexOf('`');
@@ -60,16 +61,15 @@ export class TranslateProvider implements vscode.TreeDataProvider<Dependency> {
       regT = '`';
     }
     let textx = '';
-   
     switch (regT) {
       case '"':
-        textx = text.match(/\"([^]*)\"/)[1];
+        textx = text.match(/"([^"]*)"/)[1];
         break;
       case "'":
-        textx = text.match(/\'([^]*)\'/)[1];
+        textx = text.match(/'([^']*)'/)[1];
         break;
       case '`':
-        textx = text.match(/\`([^]*)\`/)[1];
+        textx = text.match(/`([^`]*)`/)[1];
         break;
     }
 
@@ -89,8 +89,10 @@ export class TranslateProvider implements vscode.TreeDataProvider<Dependency> {
     }
     return '';
 
+   
   }
   getI18nPositionInHtml(ast, uri, list, descriptor, inside) {
+    
     let ctx = this;
 
     function bianli(tree, parent?, place?) {
@@ -124,12 +126,13 @@ export class TranslateProvider implements vscode.TreeDataProvider<Dependency> {
                 //   newcode = ctx.getI18nText(cur,uri);
                 // }
                 newcode = ctx.getI18nText(cur,uri);
-                
          
                 if(newcode!==''){
+             
                   let { test, macths } = regKey(config.reg, newcode, config.equal);
                   if ((!test && !macths && !inside) || (inside && (test || macths)) ) {
-                    let pos = new Position(loc.end.offset + 2, loc.end.offset + 2 + newcode.length, newcode, uri, new vscode.Position(loc.end.line - 2 + descriptor.template.loc.start.line, loc.end.column + 1), new vscode.Position(loc.end.line - 2 + descriptor.template.loc.start.line, loc.end.column + 1 + newcode.length));
+                    
+                    let pos = new Position(loc.end.offset + 2, loc.end.offset + 2 + newcode.length, newcode, uri, new vscode.Position(loc.end.line -1 , loc.end.column + 1), new vscode.Position(loc.end.line-1  , loc.end.column + 1 + newcode.length));
                     list.push(new Dependency(vscode.TreeItemCollapsibleState.None, pos.code, pos.uri, pos));
                   }
                 }
@@ -156,7 +159,7 @@ export class TranslateProvider implements vscode.TreeDataProvider<Dependency> {
           
           const loc = tree.loc;
           let newStr = parent.children[place + 1].replace(', [',')');
-      
+          
           // let newStr = parent.children[place + 1];
           let newcode ='';
           let curN = '';
@@ -168,7 +171,9 @@ export class TranslateProvider implements vscode.TreeDataProvider<Dependency> {
             
           //   newcode = ctx.getI18nText(curN,uri);
           // }
-          newcode = ctx.getI18nText(curN,uri);
+          
+          newcode = ctx.getI18nText(fulnew,uri);
+        
           if(newcode!==''){
 
             
@@ -217,76 +222,82 @@ export class TranslateProvider implements vscode.TreeDataProvider<Dependency> {
       }
       // console.log(files);
       files.forEach(item => {
-        let s = new compilerSFC.MagicString(fs.readFileSync(item, 'utf-8'));
-        if (s.toString().indexOf('$t(') == -1) { return; };
-        if (item.endsWith('.vue')) {
-          let sfc = compilerSFC.parse(fs.readFileSync(item, 'utf-8'), { sourceMap: true });
-          if (sfc.descriptor.scriptSetup) {
-
-            compilerSFC.walk(compilerSFC.compileScript(sfc.descriptor, { filename: 'a.vue' }).scriptSetupAst, {
-              enter(node, parent, prop, index) {
-                
-                if (node.type === 'Identifier' && node.name === '$t' && parent.arguments && parent.arguments[0] && (parent.arguments[0].value||parent.arguments[0].quasis)) {
-                
-                  let pos = new Position(parent.arguments[0].start + 1, parent.arguments[0].end - 1, parent.arguments[0].value||parent.arguments[0].quasis[0].value.raw, item, new vscode.Position(parent.arguments[0].loc.start.line - 2 + sfc.descriptor.scriptSetup.loc.start.line, parent.arguments[0].loc.start.column + 1), new vscode.Position(parent.arguments[0].loc.end.line - 2 + sfc.descriptor.scriptSetup.loc.start.line, parent.arguments[0].loc.end.column - 1));
-                
-                  let { test,macths } = regKey(config.reg, pos.code || '',config.equal);
-                  if ((!test && !macths && !inside) || (inside && (test || macths)) ) {
-                    list.push(new Dependency(vscode.TreeItemCollapsibleState.None, pos.code, pos.uri, pos));
-                  }
-
-                }
-              },
-            });
-          }
-          if (sfc.descriptor.script) {
-            compilerSFC.walk(compilerSFC.compileScript(sfc.descriptor, { filename: 'a.vue' }).scriptAst, {
-              enter(node, parent, prop, index) {
-                if (node.type === 'Identifier' && node.name === '$t' && parent.arguments) {
-                 
-                  let pos = new Position(parent.arguments[0].start + 1, parent.arguments[0].end - 1, parent.arguments[0].value||parent.arguments[0].quasis[0].value.raw, item, new vscode.Position(parent.arguments[0].loc.start.line - 2 + sfc.descriptor.script.loc.start.line, parent.arguments[0].loc.start.column + 1), new vscode.Position(parent.arguments[0].loc.end.line - 2 + sfc.descriptor.script.loc.start.line, parent.arguments[0].loc.end.column - 1));
-                  if (pos.code !== undefined) {
-
-                    let { test,macths } = regKey(config.reg, pos.code,config.equal);
+        try {
+          let s = new compilerSFC.MagicString(fs.readFileSync(item, 'utf-8'));
+          if (s.toString().indexOf('$t(') == -1) { return; };
+          if (item.endsWith('.vue')) {
+            let sfc = compilerSFC.parse(fs.readFileSync(item, 'utf-8'), { sourceMap: true });
+            if (sfc.descriptor.scriptSetup) {
+  
+              compilerSFC.walk(compilerSFC.compileScript(sfc.descriptor, { filename: 'a.vue' }).scriptSetupAst, {
+                enter(node, parent, prop, index) {
+                  
+                  if (node.type === 'Identifier' && node.name === '$t' && parent.arguments && parent.arguments[0] && (parent.arguments[0].value||parent.arguments[0].quasis)) {
+                  
+                    let pos = new Position(parent.arguments[0].start + 1, parent.arguments[0].end - 1, parent.arguments[0].value||parent.arguments[0].quasis[0].value.raw, item, new vscode.Position(parent.arguments[0].loc.start.line - 2 + sfc.descriptor.scriptSetup.loc.start.line, parent.arguments[0].loc.start.column + 1), new vscode.Position(parent.arguments[0].loc.end.line - 2 + sfc.descriptor.scriptSetup.loc.start.line, parent.arguments[0].loc.end.column - 1));
+                  
+                    let { test,macths } = regKey(config.reg, pos.code || '',config.equal);
                     if ((!test && !macths && !inside) || (inside && (test || macths)) ) {
                       list.push(new Dependency(vscode.TreeItemCollapsibleState.None, pos.code, pos.uri, pos));
                     }
+  
                   }
+                },
+              });
+            }
+            if (sfc.descriptor.script) {
+              compilerSFC.walk(compilerSFC.compileScript(sfc.descriptor, { filename: 'a.vue' }).scriptAst, {
+                enter(node, parent, prop, index) {
+                  if (node.type === 'Identifier' && node.name === '$t' && parent.arguments) {
+                   
+                    let pos = new Position(parent.arguments[0].start + 1, parent.arguments[0].end - 1, parent.arguments[0].value||parent.arguments[0].quasis[0].value.raw, item, new vscode.Position(parent.arguments[0].loc.start.line - 2 + sfc.descriptor.script.loc.start.line, parent.arguments[0].loc.start.column + 1), new vscode.Position(parent.arguments[0].loc.end.line - 2 + sfc.descriptor.script.loc.start.line, parent.arguments[0].loc.end.column - 1));
+                    if (pos.code !== undefined) {
+  
+                      let { test,macths } = regKey(config.reg, pos.code,config.equal);
+                      if ((!test && !macths && !inside) || (inside && (test || macths)) ) {
+                        list.push(new Dependency(vscode.TreeItemCollapsibleState.None, pos.code, pos.uri, pos));
+                      }
+                    }
+                  }
+                },
+              });
+            }
+            if (sfc.descriptor.template) {
+              let comppileData = compilerSFC.compileTemplate(sfc.descriptor);
+              if (comppileData.code.indexOf('$t') !== -1) {
+                this.getI18nPositionInHtml(comppileData.ast, item, list, sfc.descriptor, inside);
+              }
+  
+            }
+  
+          }
+          if (item.endsWith('.js') || item.endsWith('.jsx') || item.endsWith('.ts') || item.endsWith('.tsx')) {
+        
+            const ast = parse(fs.readFileSync(item, 'utf-8'), { sourceType: 'module', plugins: ['jsx', 'typescript'] });
+  
+            compilerSFC.walk(ast, {
+              enter(node, parent, prop, index) {
+                if (node.type === 'Identifier' && node.name === '$t' && parent.arguments) {
+  
+                  let endvs = new vscode.Position(parent.arguments[0].loc.end.line - 1, parent.arguments[0].loc.end.column - 1);
+                  let startvs = new vscode.Position(parent.arguments[0].loc.start.line - 1, parent.arguments[0].loc.start.column + 1);
+                  let range = new vscode.Range(startvs, endvs);
+  
+                  let code = getText(item, parent.arguments[0].start, parent.arguments[0].end);
+                  let pos = new Position(parent.arguments[0].start + 1, parent.arguments[0].end - 1, code, item, startvs, endvs);
+                  let { test,macths } = regKey(config.reg, pos.code,config.equal);
+                
+                  if ((!test && !macths && !inside) || (inside && (test || macths)) ) {
+                    list.push(new Dependency(vscode.TreeItemCollapsibleState.None, pos.code, pos.uri, pos));
+                  }
+  
                 }
               },
             });
           }
-          if (sfc.descriptor.template) {
-            let comppileData = compilerSFC.compileTemplate(sfc.descriptor);
-            if (comppileData.code.indexOf('$t') !== -1) {
-              this.getI18nPositionInHtml(comppileData.ast, item, list, sfc.descriptor, inside);
-            }
-
-          }
-
-        }
-        if (item.endsWith('.js') || item.endsWith('.jsx') || item.endsWith('.ts') || item.endsWith('.tsx')) {
-      
-          const ast = parse(fs.readFileSync(item, 'utf-8'), { sourceType: 'module', plugins: ['jsx', 'typescript'] });
-
-          compilerSFC.walk(ast, {
-            enter(node, parent, prop, index) {
-              if (node.type === 'Identifier' && node.name === '$t' && parent.arguments) {
-
-                let endvs = new vscode.Position(parent.arguments[0].loc.end.line - 1, parent.arguments[0].loc.end.column - 1);
-                let startvs = new vscode.Position(parent.arguments[0].loc.start.line - 1, parent.arguments[0].loc.start.column + 1);
-                let range = new vscode.Range(startvs, endvs);
-
-                let code = getText(item, parent.arguments[0].start, parent.arguments[0].end);
-                let pos = new Position(parent.arguments[0].start + 1, parent.arguments[0].end - 1, code, item, startvs, endvs);
-                let { test,macths } = regKey(config.reg, pos.code,config.equal);
-                if ((!test && !macths && !inside) || (inside && (test || macths)) ) {
-                  list.push(new Dependency(vscode.TreeItemCollapsibleState.None, pos.code, pos.uri, pos));
-                }
-
-              }
-            },
-          });
+          
+        } catch (error) {
+          console.log('enumFolder：', item );
         }
 
       });

@@ -66,6 +66,7 @@ export const getConfigByKey = function(): any {
   export const getLangJson = function(fileName: string) {
    
     const fileContent = fs.readFileSync(fileName, { encoding: 'utf8' });
+    
     // module.exports = /export\s*default\s*({[\s\S]+);?$/
     // let obj = fileContent.replace('module.exports = ', '');
    let  obj = fileContent.replace('module.exports =', 'module.exports = ');
@@ -75,6 +76,7 @@ export const getConfigByKey = function(): any {
     let jsObj = {};
     try {
       jsObj = eval(obj);
+      
     } catch (err) {
       console.log(obj);
       console.error(err);

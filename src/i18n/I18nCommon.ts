@@ -54,15 +54,17 @@ export const addi18n = function (treeProvider) {
   let decorations = [];
   // console.log();
   if(config.inline=='true') {
+   
     let packageName = getPackageJson(window.activeTextEditor.document.fileName, config.rootwork, vscode.workspace.workspaceFolders[0].uri.fsPath);
     decorations = treeProvider.enumFolder(activeEditor.document.fileName, true,activeEditor.document).map(item=>{
+
       let range=new Range(new vscode.Position(item.position.vsPosStrat.line,item.position.vsPosStrat.character),new vscode.Position(item.position.vsPosEnd.line,item.position.vsPosEnd.character));
       return {
         range,
         renderOptions: {
           after: {
             color: '#999999',
-            contentText: `🔧   ${langmap[packageName]? langmap[packageName][item.label]:langmap['AllIn'][item.label] ||"未翻译词条"} 🔧`,
+            contentText: `🔧   ${global.langmap[packageName]? global.langmap[packageName][item.label]:global.langmap['AllIn'][item.label] ||"未翻译词条"} 🔧`,
             fontWeight: 'normal',
             fontStyle: 'normal',
             textDecoration: 'none;'
