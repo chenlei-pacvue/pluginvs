@@ -195,9 +195,9 @@ export class TranslateProvider implements vscode.TreeDataProvider<Dependency> {
                   }
                 });
                 
-                pos = new Position(loc.end.offset + 2, loc.end.offset + 2 + newcode.length, newcode, uri, new vscode.Position(loc.end.line - 2 + descriptor.template.loc.start.line+line, col), new vscode.Position(loc.end.line - 2 + descriptor.template.loc.start.line+line, col + newcode.length));
+                pos = new Position(loc.end.offset + 2, loc.end.offset + 2 + newcode.length, newcode, uri, new vscode.Position(loc.end.line -1, col), new vscode.Position(loc.end.line -1, col + newcode.length));
               } else {
-                pos = new Position(loc.end.offset + 2, loc.end.offset + 2 + newcode.length, newcode, uri, new vscode.Position(loc.end.line - 2 + descriptor.template.loc.start.line, loc.end.column + 1), new vscode.Position(loc.end.line - 2 + descriptor.template.loc.start.line, loc.end.column + 1 + newcode.length));
+                pos = new Position(loc.end.offset + 2, loc.end.offset + 2 + newcode.length, newcode, uri, new vscode.Position(loc.end.line -1, loc.end.column + 1), new vscode.Position(loc.end.line -1, loc.end.column + 1 + newcode.length));
               }
                
               list.push(new Dependency(vscode.TreeItemCollapsibleState.None, pos.code, pos.uri, pos));
