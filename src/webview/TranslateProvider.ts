@@ -46,11 +46,12 @@ export class TranslateProvider implements vscode.TreeDataProvider<Dependency> {
     // let reg = /"(.+?)"/gi;
     // let ref = text.replace(/[',`]/g, '"').match(reg);
     // 判断` ' " 这几个符号谁出现在第一个
-  
+    
     let code1 = text.indexOf('"') === -1 ? 100000:text.indexOf('"');
     let code2 = text.indexOf("'") === -1 ? 100000:text.indexOf("'");
     let code3 = text.indexOf('`')  === -1? 100000:text.indexOf('`');
     let regT = '';
+    
     if (code1<code2 && code1<code3) {
       regT = '"';
     }
@@ -61,15 +62,19 @@ export class TranslateProvider implements vscode.TreeDataProvider<Dependency> {
       regT = '`';
     }
     let textx = '';
+    // if (uri.indexOf('FeedBack.vue')!=-1){
+
+    //   console.log(text,22);
+    // }
     switch (regT) {
       case '"':
-        textx = text.match(/"([^"]*)"/)[1];
+        textx = text.match(/"(.*?)"/)[1];
         break;
       case "'":
-        textx = text.match(/'([^']*)'/)[1];
+        textx = text.match(/'(.*?)'/)[1];
         break;
       case '`':
-        textx = text.match(/`([^`]*)`/)[1];
+        textx = text.match(/`(.*?)`/)[1];
         break;
     }
 
@@ -94,7 +99,7 @@ export class TranslateProvider implements vscode.TreeDataProvider<Dependency> {
   getI18nPositionInHtml(ast, uri, list, descriptor, inside) {
     
     let ctx = this;
-
+    
     function bianli(tree, parent?, place?) {
       
       if (tree.props?.length > 0) {
@@ -104,6 +109,7 @@ export class TranslateProvider implements vscode.TreeDataProvider<Dependency> {
             
             item.exp.children.reduce((pre, cur) => {
               if (pre.content === '_ctx.$t') {
+                
                 const loc = pre.loc;
                 let curN = '';
                 let newcode = '';
@@ -126,12 +132,12 @@ export class TranslateProvider implements vscode.TreeDataProvider<Dependency> {
                 //   newcode = ctx.getI18nText(cur,uri);
                 // }
                 newcode = ctx.getI18nText(cur,uri);
-         
+                
                 if(newcode!==''){
              
                   let { test, macths } = regKey(config.reg, newcode, config.equal);
                   if ((!test && !macths && !inside) || (inside && (test || macths)) ) {
-                    
+                    // console.log(newcode,loc,parent,cur.indexOf('(\n'),cur);
                     let pos = new Position(loc.end.offset + 2, loc.end.offset + 2 + newcode.length, newcode, uri, new vscode.Position(loc.end.line -1 , loc.end.column + 1), new vscode.Position(loc.end.line-1  , loc.end.column + 1 + newcode.length));
                     list.push(new Dependency(vscode.TreeItemCollapsibleState.None, pos.code, pos.uri, pos));
                   }
@@ -194,8 +200,11 @@ export class TranslateProvider implements vscode.TreeDataProvider<Dependency> {
                     return true;
                   }
                 });
-                
-                pos = new Position(loc.end.offset + 2, loc.end.offset + 2 + newcode.length, newcode, uri, new vscode.Position(loc.end.line -1, col), new vscode.Position(loc.end.line -1, col + newcode.length));
+                if(newStr.indexOf('(\n')===0){
+                  pos = new Position(parent.loc.end.offset + 2, parent.loc.end.offset + 2 + newcode.length, newcode, uri, new vscode.Position(parent.loc.end.line -2, col), new vscode.Position(parent.loc.end.line -2, col + newcode.length));
+                } else {
+                  pos = new Position(loc.end.offset + 2, loc.end.offset + 2 + newcode.length, newcode, uri, new vscode.Position(loc.end.line -1, col), new vscode.Position(loc.end.line -1, col + newcode.length));
+                }
               } else {
                 pos = new Position(loc.end.offset + 2, loc.end.offset + 2 + newcode.length, newcode, uri, new vscode.Position(loc.end.line -1, loc.end.column + 1), new vscode.Position(loc.end.line -1, loc.end.column + 1 + newcode.length));
               }
