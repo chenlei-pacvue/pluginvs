@@ -150,14 +150,15 @@ class FileClass {
     try {
       let files = fs.readdirSync(this.outfilePath);
       files.forEach(item => {
-        console.log(item);
+        console.log(this.outfilePath,item,111);
         if (item.indexOf('.')!==0){
           let data = fs.readFileSync(
             `${this.outfilePath}/${item}`,
           );
+          let name = item.split('.')[0];
           fs.writeFileSync(
             `${this.outfilePath}/${item}`,
-            'export default ' + data,
+            `window.locale_${name.toLocaleUpperCase()} = ` + data + `\r\n export default window.locale_${name.toLocaleUpperCase()}`,
             "utf8"
           );
         }

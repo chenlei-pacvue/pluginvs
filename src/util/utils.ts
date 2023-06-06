@@ -94,6 +94,7 @@ function codeReplace(list) {
  }
  function exporttsv(list,path) {
   const content = tsvFormatRows(list.map(item=>[item.label]));
+  console.log(list, path);
   fs.writeFileSync(path, content);
  }
 export {getPackageJson, regKey, codeReplace,exporttsv};
