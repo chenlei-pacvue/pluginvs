@@ -89,9 +89,9 @@ export function activate(context: vscode.ExtensionContext) {
               if (message.text.data.radioChceck === 'sheet') {
 
                 let sheetArr = message.text.data.sheet.split(',');
-                ff.checkSheet(sheetArr, ["C", "D"]);
+                ff.checkSheet(sheetArr, ["C", "D", "E"]);
               } else {
-                ff.checkAllSheet(["C", "D"]);
+                ff.checkAllSheet(["C", "D", "E"]);
               }
 							vscode.window.showInformationMessage('导出完成');
               panel.webview.postMessage({ command: 'success'});

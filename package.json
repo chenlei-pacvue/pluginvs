@@ -127,6 +127,7 @@
 		}
 	},
 	"scripts": {
+    "i18n": "node ./util/i18ntest.js",
 		"vscode:prepublish": "npm run package",
 		"compile": "webpack",
 		"watch": "webpack --watch",
