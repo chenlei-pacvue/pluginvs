@@ -17,7 +17,7 @@
     // 重新设定tabsize
     "editor.tabSize": 2,
     "editor.codeActionsOnSave": {
-      "source.fixAll.eslint": true
+      "source.fixAll.eslint": "explicit"
     },
     "i18n-ally.localesPaths": [
       "src/i18n"
