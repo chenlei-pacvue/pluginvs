@@ -1,6 +1,6 @@
 {
-	"name": "pacvueextension",
-	"displayName": "pacvueExtension",
+	"name": "metro",
+	"displayName": "metro",
 	"description": "pacvue tool",
 	"version": "1.0.7",
 	"repository": {
@@ -15,17 +15,17 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onView:pacvueextension.pacvue.show",
-		"onView:pacvueextension.pacvue.info",
+		"onView:metro.pacvue.show",
+		"onView:metro.pacvue.info",
 		"onLanguage:javascript",
 		"onLanguage:vue"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
 		"configuration": {
-			"title": "pacvueExtension",
+			"title": "metro",
 			"properties": {
-				"pacvueExtension.useInsideShow": {
+				"metro.useInsideShow": {
 					"type": "string",
 					"default": "true",
 					"enum": [
@@ -38,19 +38,19 @@
 		},
 		"commands": [
 			{
-				"command": "pacvueextension.replace",
+				"command": "metro.replace",
 				"title": "replace text"
 			},
 			{
-				"command": "pacvueextension.show18Tool",
+				"command": "metro.show18Tool",
 				"title": "show18Tool"
 			},
 			{
-				"command": "pacvueextension.showCreate",
+				"command": "metro.showCreate",
 				"title": "showCreate"
 			},
 			{
-				"command": "pacvueextension.refresh",
+				"command": "metro.refresh",
 				"title": "refresh",
 				"icon": {
 					"light": "images/refresh.svg",
@@ -58,7 +58,7 @@
 				}
 			},
 			{
-				"command": "pacvueextension.preview",
+				"command": "metro.preview",
 				"title": "preview",
 				"icon": {
 					"light": "images/Preview.svg",
@@ -66,11 +66,11 @@
 				}
 			},
 			{
-				"command": "pacvueextension.export",
+				"command": "metro.export",
 				"title": "导出"
 			},
 			{
-				"command": "pacvueextension.replaceAll",
+				"command": "metro.replaceAll",
 				"title": "replace text",
 				"icon": {
 					"light": "images/replaceAll.svg",
@@ -81,23 +81,23 @@
 		"menus": {
 			"view/item/context": [
 				{
-					"command": "pacvueextension.refresh",
-					"when": "view == pacvueextension.pacvue.info && viewItem == dependency",
+					"command": "metro.refresh",
+					"when": "view == metro.pacvue.info && viewItem == dependency",
 					"group": "inline"
 				},
 				{
-					"command": "pacvueextension.replaceAll",
-					"when": "view == pacvueextension.pacvue.info && viewItem == dependency",
+					"command": "metro.replaceAll",
+					"when": "view == metro.pacvue.info && viewItem == dependency",
 					"group": "inline"
 				},
 				{
-					"command": "pacvueextension.preview",
-					"when": "view == pacvueextension.pacvue.info && viewItem == dependencyItem",
+					"command": "metro.preview",
+					"when": "view == metro.pacvue.info && viewItem == dependencyItem",
 					"group": "inline"
 				},
 				{
-					"command": "pacvueextension.export",
-					"when": "view == pacvueextension.pacvue.info && viewItem == dependency",
+					"command": "metro.export",
+					"when": "view == metro.pacvue.info && viewItem == dependency",
 					"group": "inline"
 				}
 			]
@@ -105,23 +105,19 @@
 		"viewsContainers": {
 			"activitybar": [
 				{
-					"id": "pacvueContrl",
-					"title": "pacvueTools",
+					"id": "metroContrl",
+					"title": "metroTools",
 					"icon": "images/Shipments.svg"
 				}
 			]
 		},
 		"views": {
-			"pacvueContrl": [
+			"metroContrl": [
 				{
-					"id": "pacvueextension.pacvue.show",
+					"id": "metro.pacvue.show",
 					"type": "webview",
 					"contextualTitle": "Pavue",
 					"name": "工具箱"
-				},
-				{
-					"id": "pacvueextension.pacvue.info",
-					"name": "国际化信息"
 				}
 			]
 		}

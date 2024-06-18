@@ -26,21 +26,35 @@ provideVSCodeDesignSystem().register(vsCodePanelView());
 function excelTool () {
   vscode.postMessage({
     command: 'alert',
-    text: "pacvueextension.show18Tool"
+    text: "metro.show18Tool"
   });
 }
 function create () {
   vscode.postMessage({
     command: 'alert',
-    text: "pacvueextension.showCreate"
+    text: "metro.showCreate"
   });
+}
+function initProject() {
+  vscode.postMessage({
+    command: 'alert',
+    text: "metro.initProject"
+  });
+}
+function runcode() {
+
+}
+function buildcode() {
+
 }
 </script>
 
 <template>
   <main>
-    <vscode-button  @click='excelTool'>国际化工具</vscode-button>
     <vscode-button  @click='create'>新建项目</vscode-button>
+    <vscode-button  @click='initProject'>初始化项目</vscode-button>
+    <vscode-button  @click='runcode'>运行项目</vscode-button>
+    <vscode-button  @click='buildcode'>编译项目</vscode-button>
   </main>
 </template>
 

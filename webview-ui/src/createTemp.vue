@@ -72,8 +72,8 @@ window.addEventListener("message", (event) => {
     </div>
     <h3>创建模版项目</h3>
     <vscode-panels aria-label="Default" @change='tabchange'>
-      <vscode-panel-tab id="vue2">vue2</vscode-panel-tab>
-      <vscode-panel-tab id="vue3">vue3</vscode-panel-tab>
+      <vscode-panel-tab id="vue2">vue3</vscode-panel-tab>
+      <vscode-panel-tab id="vue3">小程序</vscode-panel-tab>
       <vscode-panel-view id="view-1"> 
         <div>
         <div class='flex' style="width:100%">
