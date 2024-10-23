@@ -17,6 +17,7 @@
 	"activationEvents": [
 		"onView:metro.pacvue.show",
 		"onView:metro.pacvue.info",
+		"onView:metro.lowCodePanel",
 		"onLanguage:javascript",
 		"onLanguage:vue"
 	],
@@ -123,7 +124,7 @@
 		}
 	},
 	"scripts": {
-    "i18n": "node ./util/i18ntest.js",
+		"i18n": "node ./util/i18ntest.js",
 		"vscode:prepublish": "npm run package",
 		"compile": "webpack",
 		"watch": "webpack --watch",
@@ -135,6 +136,8 @@
 		"test": "node ./out/test/runTest.js"
 	},
 	"devDependencies": {
+		"@tomjs/vite-plugin-vscode": "^3.0.0",
+		"@tomjs/vscode-extension-webview": "^2.0.0",
 		"@types/fs-extra": "^9.0.13",
 		"@types/glob": "^7.1.4",
 		"@types/mocha": "^9.0.0",

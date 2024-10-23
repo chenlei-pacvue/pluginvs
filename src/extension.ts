@@ -8,6 +8,7 @@ import { addi18n } from './i18n/I18nCommon';
 import { FileClass } from './util/FileClass';
 import { getPackageJson, codeReplace, exporttsv } from './util/utils';
 import { initPro } from './util/project';
+import getHtml from '@tomjs/vscode-extension-webview';
 var fs = require('fs');
 import {
   WebviewView,
@@ -25,6 +26,8 @@ import * as path from 'path';
 export function activate(context: vscode.ExtensionContext) {
 
   global.channel = vscode.window.createOutputChannel('metro');
+  
+  global.channel.show();
   let createPanel = vscode.commands.registerCommand('metro.showCreate', () => {
     const panel = vscode.window.createWebviewPanel(
       'sidebar',
@@ -43,7 +46,10 @@ export function activate(context: vscode.ExtensionContext) {
           case 'create':
             try {
               createProject(message.text.outPath, message.text.projectName);
+              console.log(111);
             } catch (error) {
+              console.log(error);
+              // channel.append(error);
             }
             return;
           case 'selectfile':
@@ -58,6 +64,25 @@ export function activate(context: vscode.ExtensionContext) {
       context.subscriptions
     );
     panel.webview.html = getWebviewCreatePanel(panel.webview, context.extensionUri);
+  });
+  // 初始化第代码部分
+  let createLowCodePanel = vscode.commands.registerCommand('metro.lowCodePanel', ()=> {
+    const panel  = vscode.window.createWebviewPanel(
+      'lowcodePanel',
+      'lowcode Panel',
+      { viewColumn: vscode.ViewColumn.Beside, preserveFocus: false },
+      {
+        retainContextWhenHidden: true,
+        enableFindWidget: true,
+        enableCommandUris: true,
+        enableScripts: true,
+      },
+    );
+    panel.webview.html = getHtml( {serverUrl: `http://localhost:5173`});
+    // panel.webview.html = process.env.VITE_DEV_SERVER_URL;
+    // console.log(process.env.VITE_DEV_SERVER_URL, 1111)
+    // ? getHtml( {serverUrl: `http://localhost:5173`})
+    // : getHtml(panel.webview);
   });
   let i18nView = vscode.commands.registerCommand('metro.show18Tool', () => {
     const panel = vscode.window.createWebviewPanel(
@@ -118,6 +143,7 @@ export function activate(context: vscode.ExtensionContext) {
   let initProject = vscode.commands.registerCommand('metro.initProject',()=>{
     initPro('delete');
   });
+  context.subscriptions.push(createLowCodePanel);
   context.subscriptions.push(createPanel);
   context.subscriptions.push(i18nView);
   context.subscriptions.push(initProject);

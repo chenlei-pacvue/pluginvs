@@ -47,14 +47,21 @@ function runcode() {
 function buildcode() {
 
 }
+function lowcode() {
+  vscode.postMessage({
+    command: 'alert',
+    text: "metro.lowCodePanel"
+  });
+}
 </script>
 
 <template>
   <main>
-    <vscode-button  @click='create'>新建项目</vscode-button>
-    <vscode-button  @click='initProject'>初始化项目</vscode-button>
-    <vscode-button  @click='runcode'>运行项目</vscode-button>
-    <vscode-button  @click='buildcode'>编译项目</vscode-button>
+    <vscode-button  @click='create' style="width: 200px;">新建项目</vscode-button>
+    <vscode-button  @click='initProject' style="width: 200px;">初始化项目</vscode-button>
+    <vscode-button  @click='runcode' style="width: 200px;">运行项目</vscode-button>
+    <vscode-button  @click='lowcode' style="width: 200px;">低代码</vscode-button>
+    <vscode-button  @click='buildcode' style="width: 200px;">编译项目</vscode-button>
   </main>
 </template>
 
